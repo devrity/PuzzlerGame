@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace 'com.devrity.puzzler'
-    compileSdk 36
+    compileSdk = 36
 
     defaultConfig {
         applicationId "com.devrity.puzzler"
