@@ -154,6 +154,8 @@ class MainActivity : AppCompatActivity() {
         // Set puzzle board to game view
         if (puzzleBoard != null) {
             gameView.setPuzzleBoard(puzzleBoard!!)
+                        gameView.setShowGridLines(true)
+                                    gameView.setInteractionEnabled(true)
         }
     }
 
@@ -179,6 +181,8 @@ class MainActivity : AppCompatActivity() {
         // Set puzzle board to game view
         if (puzzleBoard != null) {
             gameView.setPuzzleBoard(puzzleBoard!!)
+                        gameView.setShowGridLines(true)
+                                    gameView.setInteractionEnabled(true)
         }
     }
 
