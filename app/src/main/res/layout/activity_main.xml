@@ -64,15 +64,15 @@
             android:contentDescription="@string/settings"
             android:src="@android:drawable/ic_menu_manage" />
 
-        <!-- Next Button -->
+        <!-- Gallery Button -->
         <ImageButton
-            android:id="@+id/next_button"
+            android:id="@+id/gallery_button"
             android:layout_width="72dp"
             android:layout_height="72dp"
             android:layout_margin="6dp"
             
-            android:contentDescription="@string/next"
-            android:src="@android:drawable/ic_media_next" />
+            android:contentDescription="@string/gallery"
+            android:src="@android:drawable/ic_photo_library" />
 
         <!-- Premium Button -->
         <ImageButton
