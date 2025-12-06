@@ -24,5 +24,6 @@ object Constants {
     
     // Grid display
     const val GRID_LINE_WIDTH = 5f
+    const val GRID_OUTER_BORDER_WIDTH = 10f
     const val GRID_LINE_COLOR = 0xFF000000.toInt() // Black
 }
