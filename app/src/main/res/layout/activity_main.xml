@@ -72,7 +72,7 @@
             android:layout_margin="6dp"
             
             android:contentDescription="@string/gallery"
-            android:src="@android:drawable/ic_photo_library" />
+            android:src="@android:drawable/ic_menu_gallery" />
 
         <!-- Premium Button -->
         <ImageButton
