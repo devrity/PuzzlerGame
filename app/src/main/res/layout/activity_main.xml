@@ -7,9 +7,9 @@
     android:background="#E8F5E9"
     tools:context=".MainActivity">
 
-    <!-- Puzzle Area -->
-    <FrameLayout
-        android:id="@+id/puzzle_area"
+    <!-- Puzzle Game View -->
+    <com.devrity.puzzler.ui.GameView
+        android:id="@+id/game_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_margin="16dp"
@@ -29,8 +29,9 @@
         android:layout_marginEnd="16dp"
         android:background="#A5D6A7"
         android:padding="4dp"
+        android:scaleType="centerCrop"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/puzzle_area" />
+        app:layout_constraintTop_toBottomOf="@+id/game_view" />
 
     <!-- Button Row -->
     <LinearLayout
@@ -50,6 +51,7 @@
             android:layout_height="72dp"
             android:layout_margin="8dp"
             android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/home"
             android:src="@android:drawable/ic_dialog_info" />
 
         <ImageButton
@@ -58,6 +60,7 @@
             android:layout_height="72dp"
             android:layout_margin="8dp"
             android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/restart"
             android:src="@android:drawable/ic_menu_revert" />
 
         <ImageButton
@@ -66,6 +69,7 @@
             android:layout_height="72dp"
             android:layout_margin="8dp"
             android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/hint"
             android:src="@android:drawable/ic_menu_help" />
 
         <ImageButton
@@ -74,6 +78,7 @@
             android:layout_height="72dp"
             android:layout_margin="8dp"
             android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/settings"
             android:src="@android:drawable/ic_menu_manage" />
 
     </LinearLayout>
