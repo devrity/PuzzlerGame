@@ -41,65 +41,64 @@
             android:gravity="center"
             android:layout_margin="6dp">
 
+            <!-- Replay Button -->
             <ImageButton
-                android:id="@+id/home_button"
+                android:id="@+id/replay_button"
                 android:layout_width="0dp"
                 android:layout_height="72dp"
                 android:layout_weight="1"
                 android:layout_margin="4dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/home"
-                android:scaleType="fitCenter"
-                android:src="@android:drawable/ic_dialog_info" />
-
-            <ImageButton
-                android:id="@+id/restart_button"
-                android:layout_width="0dp"
-                android:layout_height="72dp"
-                android:layout_weight="1"
-                android:layout_margin="4dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/restart"
-                android:scaleType="fitCenter"
+                android:background="@attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/replay"
                 android:src="@android:drawable/ic_menu_revert" />
 
-            <ImageButton
-                android:id="@+id/hint_button"
-                android:layout_width="0dp"
-                android:layout_height="72dp"
-                android:layout_weight="1"
-                android:layout_margin="4dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/hint"
-                android:scaleType="fitCenter"
-                android:src="@android:drawable/ic_menu_help" />
-
+            <!-- Settings Button -->
             <ImageButton
                 android:id="@+id/settings_button"
                 android:layout_width="0dp"
                 android:layout_height="72dp"
                 android:layout_weight="1"
                 android:layout_margin="4dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                android:background="@attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/settings"
-                android:scaleType="fitCenter"
                 android:src="@android:drawable/ic_menu_manage" />
+
+            <!-- Next Button -->
+            <ImageButton
+                android:id="@+id/next_button"
+                android:layout_width="0dp"
+                android:layout_height="72dp"
+                android:layout_weight="1"
+                android:layout_margin="4dp"
+                android:background="@attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/next"
+                android:src="@android:drawable/ic_media_next" />
+
+            <!-- Premium Button -->
+            <ImageButton
+                android:id="@+id/premium_button"
+                android:layout_width="0dp"
+                android:layout_height="72dp"
+                android:layout_weight="1"
+                android:layout_margin="4dp"
+                android:background="@attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/premium"
+                android:src="@android:drawable/ic_lock_lock" />
 
         </LinearLayout>
 
     </LinearLayout>
 
-    <!-- Right Panel (Game) - 70% width, full height -->
+    <!-- Right Panel - Game View (70% width) -->
     <com.devrity.puzzler.ui.GameView
         android:id="@+id/game_view"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_margin="6dp"
+        android:layout_height="match_parent"
         android:background="#C8E6C9"
+        app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintStart_toEndOf="@+id/left_panel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintDimensionRatio="1:1" />
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
