@@ -10,5 +10,6 @@
     <string name="puzzle_solved">You solved the puzzle!</string>
         <string name="replay">Replay</string>
     <string name="next">Next</string>
+        <string name="gallery">Gallery</string>
     <string name="premium">Premium</string>
 </resources>
