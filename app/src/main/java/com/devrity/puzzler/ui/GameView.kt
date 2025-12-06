@@ -3,6 +3,7 @@ package com.devrity.puzzler.ui
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.MotionEvent
@@ -25,12 +26,19 @@ class GameView @JvmOverloads constructor(
     private var pieces: Array<PuzzlePiece?> = emptyArray()
     private var gridSize: Int = Constants.DEFAULT_GRID_SIZE
     private var pieceSize: Float = 0f
+    private var totalSize: Float = 0f
+    private var offsetX: Float = 0f
+    private var offsetY: Float = 0f
     
     private var showGridLines: Boolean = true
     private var isInteractionEnabled: Boolean = false
     
     // Paint objects for drawing
     private val piecePaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val emptySpacePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.WHITE
+        style = Paint.Style.FILL
+    }
     private val gridPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Constants.GRID_LINE_COLOR
         strokeWidth = Constants.GRID_LINE_WIDTH
@@ -88,10 +96,16 @@ class GameView @JvmOverloads constructor(
     
     /**
      * Calculate the size of each puzzle piece based on view dimensions.
+     * Uses the smaller dimension to ensure the puzzle fits completely.
      */
     private fun calculatePieceSize() {
         val size = minOf(width, height).toFloat()
+        totalSize = size
         pieceSize = size / gridSize
+        
+        // Center the puzzle in the view
+        offsetX = (width - totalSize) / 2f
+        offsetY = (height - totalSize) / 2f
     }
     
     override fun onDraw(canvas: Canvas) {
@@ -99,28 +113,30 @@ class GameView @JvmOverloads constructor(
         
         if (pieces.isEmpty()) return
         
-        // Center the puzzle in the view
-        val totalSize = pieceSize * gridSize
-        val offsetX = (width - totalSize) / 2f
-        val offsetY = (height - totalSize) / 2f
-        
         // Draw each piece
         for (piece in pieces) {
             piece?.let {
-                if (!it.isEmptySpace && it.bitmap != null) {
-                    val row = it.currentPosition / gridSize
-                    val col = it.currentPosition % gridSize
-                    val left = offsetX + col * pieceSize
-                    val top = offsetY + row * pieceSize
-                    
+                val row = it.currentPosition / gridSize
+                val col = it.currentPosition % gridSize
+                val left = offsetX + col * pieceSize
+                val top = offsetY + row * pieceSize
+                val right = left + pieceSize
+                val bottom = top + pieceSize
+                
+                if (it.isEmptySpace) {
+                    // Draw white square for empty space
+                    canvas.drawRect(left, top, right, bottom, emptySpacePaint)
+                } else if (it.bitmap != null) {
+                    // Draw the piece bitmap, slightly inset to prevent overlap with grid lines
+                    val inset = Constants.GRID_LINE_WIDTH / 2f
                     canvas.drawBitmap(
                         it.bitmap,
                         null,
                         android.graphics.RectF(
-                            left,
-                            top,
-                            left + pieceSize,
-                            top + pieceSize
+                            left + inset,
+                            top + inset,
+                            right - inset,
+                            bottom - inset
                         ),
                         piecePaint
                     )
@@ -128,7 +144,7 @@ class GameView @JvmOverloads constructor(
             }
         }
         
-        // Draw grid lines if enabled
+        // Draw grid lines on top of pieces
         if (showGridLines) {
             for (i in 0..gridSize) {
                 // Vertical lines
@@ -227,10 +243,6 @@ class GameView @JvmOverloads constructor(
      * Get the position of the piece at given coordinates.
      */
     private fun getTouchedPosition(x: Float, y: Float): Int {
-        val totalSize = pieceSize * gridSize
-        val offsetX = (width - totalSize) / 2f
-        val offsetY = (height - totalSize) / 2f
-        
         // Check if touch is within puzzle bounds
         if (x < offsetX || x > offsetX + totalSize || y < offsetY || y > offsetY + totalSize) {
             return -1

@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
         initViews()
         setupListeners()
         
-        // Start a new game (for now with a placeholder)
+        // Start a new game
         startNewGame()
     }
     
@@ -83,9 +83,8 @@ class MainActivity : AppCompatActivity() {
      * Start a new game with a random image.
      */
     private fun startNewGame() {
-        // For Phase 1, we'll use a drawable resource as placeholder
-        // since we don't have images in assets yet
-        currentImage = getPlaceholderImage()
+        // Load image from assets or use test pattern
+        currentImage = ImageManager.getRandomImage(this) ?: createTestImage()
         
         if (currentImage == null) {
             Toast.makeText(this, "Error loading image", Toast.LENGTH_SHORT).show()
@@ -113,7 +112,7 @@ class MainActivity : AppCompatActivity() {
         gameView.setShowGridLines(true)
         gameView.setInteractionEnabled(true)
         
-        Toast.makeText(this, "Game started! Tap pieces adjacent to empty space to move them.", Toast.LENGTH_LONG).show()
+        Toast.makeText(this, "Tap or swipe pieces adjacent to the empty space!", Toast.LENGTH_LONG).show()
     }
     
     /**
@@ -155,22 +154,6 @@ class MainActivity : AppCompatActivity() {
         gameView.setInteractionEnabled(false)
         Toast.makeText(this, "Congratulations! Puzzle solved!", Toast.LENGTH_LONG).show()
         // TODO: Implement victory animation and dialog in Phase 2
-    }
-    
-    /**
-     * Get a placeholder image for testing.
-     * In production, this will be replaced by ImageManager.getRandomImage()
-     */
-    private fun getPlaceholderImage(): Bitmap? {
-        // Try to get from assets first
-        val assetImage = ImageManager.getRandomImage(this)
-        if (assetImage != null) {
-            return assetImage
-        }
-        
-        // Fallback to a simple colored square for testing
-        // This creates a test pattern
-        return createTestImage()
     }
     
     /**
