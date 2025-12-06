@@ -21,8 +21,7 @@ object ImageManager {
             val imageFiles = assetManager.list(Constants.PUZZLE_IMAGES_FOLDER) ?: emptyArray()
             
             if (imageFiles.isEmpty()) {
-                // Fallback: use a drawable resource if no assets available
-                // For now, return null - we'll add sample images later
+                // No images in assets folder
                 null
             } else {
                 val randomFile = imageFiles.random()
@@ -30,10 +29,17 @@ object ImageManager {
                 val bitmap = BitmapFactory.decodeStream(inputStream)
                 inputStream.close()
                 
-                // Ensure the image is square
-                ensureSquare(bitmap)
+                // Ensure the image is square (null check added)
+                if (bitmap != null) {
+                    ensureSquare(bitmap)
+                } else {
+                    null
+                }
             }
         } catch (e: IOException) {
+            e.printStackTrace()
+            null
+        } catch (e: Exception) {
             e.printStackTrace()
             null
         }
