@@ -192,7 +192,7 @@ class MainActivity : AppCompatActivity() {
 
         // Wait 1 second then hide grid
         handler.postDelayed({
-            gameView.hideGridLines()
+            gameView.
         }, 1000)
 
         // Wait 1.5 seconds then show victory dialog
