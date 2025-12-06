@@ -49,7 +49,7 @@
             android:id="@+id/replay_button"
             android:layout_width="72dp"
             android:layout_height="72dp"
-            android:layout_margin="8dp"
+            android:layout_margin="6dp"
             
             android:contentDescription="@string/replay"
             android:src="@android:drawable/ic_menu_revert" />
@@ -59,7 +59,7 @@
             android:id="@+id/settings_button"
             android:layout_width="72dp"
             android:layout_height="72dp"
-            android:layout_margin="8dp"
+            android:layout_margin="6dp"
             
             android:contentDescription="@string/settings"
             android:src="@android:drawable/ic_menu_manage" />
@@ -69,7 +69,7 @@
             android:id="@+id/next_button"
             android:layout_width="72dp"
             android:layout_height="72dp"
-            android:layout_margin="8dp"
+            android:layout_margin="6dp"
             
             android:contentDescription="@string/next"
             android:src="@android:drawable/ic_media_next" />
@@ -79,7 +79,7 @@
             android:id="@+id/premium_button"
             android:layout_width="72dp"
             android:layout_height="72dp"
-            android:layout_margin="8dp"
+            android:layout_margin="6dp"
             
             android:contentDescription="@string/premium"
             android:src="@android:drawable/ic_lock_lock" />
