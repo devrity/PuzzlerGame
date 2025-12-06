@@ -15,23 +15,26 @@
         android:layout_margin="16dp"
         android:background="#C8E6C9"
         app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintBottom_toTopOf="@+id/thumbnail_preview"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintHeight_percent="0.7" />
+        app:layout_constraintWidth_max="wrap_content"
+        app:layout_constraintHeight_max="wrap_content" />
 
     <!-- Thumbnail Preview -->
     <ImageView
         android:id="@+id/thumbnail_preview"
         android:layout_width="72dp"
         android:layout_height="72dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
         android:background="#A5D6A7"
         android:padding="4dp"
         android:scaleType="centerCrop"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/game_view" />
+        app:layout_constraintBottom_toTopOf="@+id/button_row"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Button Row -->
     <LinearLayout
