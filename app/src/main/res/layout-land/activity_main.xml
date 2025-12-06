@@ -14,20 +14,12 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:background="#E8F5E9"
+        android:padding="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/game_view"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintWidth_percent="0.3">
-
-        <!-- Top Bar (inside left panel) -->
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="#E8F5E9"
-            app:title="@string/app_name"
-            app:titleTextColor="@android:color/black" />
 
         <!-- Thumbnail Preview -->
         <ImageView
@@ -35,7 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_margin="8dp"
+            android:layout_marginBottom="8dp"
             android:background="#A5D6A7"
             android:padding="4dp"
             android:scaleType="centerCrop" />
