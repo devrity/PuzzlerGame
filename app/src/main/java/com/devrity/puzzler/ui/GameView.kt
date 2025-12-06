@@ -50,8 +50,9 @@ class GameView @JvmOverloads constructor(
     private var touchStartY: Float = 0f
     private val swipeThreshold = 50f // Minimum distance for swipe
     
-    // Callback for piece moves
+    // Callbacks
     var onPieceMovedListener: ((isSolved: Boolean) -> Unit)? = null
+    var onPieceMoved: (() -> Unit)? = null  // For sound/haptic on successful move
     
     /**
      * Initialize the game with a puzzle board.
@@ -265,6 +266,7 @@ class GameView @JvmOverloads constructor(
         puzzleBoard?.let { board ->
             if (board.movePiece(position)) {
                 updatePieces()
+                onPieceMoved?.invoke()  // Trigger sound/haptic feedback
                 onPieceMovedListener?.invoke(board.isSolved())
             }
         }
