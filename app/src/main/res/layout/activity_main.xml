@@ -18,9 +18,7 @@
         app:layout_constraintBottom_toTopOf="@+id/thumbnail_preview"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_max="wrap_content"
-        app:layout_constraintHeight_max="wrap_content" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Thumbnail Preview -->
     <ImageView
