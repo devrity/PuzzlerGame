@@ -23,6 +23,6 @@ object Constants {
     const val TARGET_IMAGE_SIZE = 1024
     
     // Grid display
-    const val GRID_LINE_WIDTH = 4f
+    const val GRID_LINE_WIDTH = 84f
     const val GRID_LINE_COLOR = 0xFF000000.toInt() // Black
 }
