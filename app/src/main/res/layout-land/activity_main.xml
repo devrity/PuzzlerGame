@@ -48,7 +48,7 @@
                 android:layout_height="72dp"
                 android:layout_weight="1"
                 android:layout_margin="4dp"
-                android:background="@attr/selectableItemBackgroundBorderless"
+                
                 android:contentDescription="@string/replay"
                 android:src="@android:drawable/ic_menu_revert" />
 
@@ -59,7 +59,7 @@
                 android:layout_height="72dp"
                 android:layout_weight="1"
                 android:layout_margin="4dp"
-                android:background="@attr/selectableItemBackgroundBorderless"
+                
                 android:contentDescription="@string/settings"
                 android:src="@android:drawable/ic_menu_manage" />
 
@@ -70,7 +70,7 @@
                 android:layout_height="72dp"
                 android:layout_weight="1"
                 android:layout_margin="4dp"
-                android:background="@attr/selectableItemBackgroundBorderless"
+                
                 android:contentDescription="@string/next"
                 android:src="@android:drawable/ic_media_next" />
 
@@ -81,7 +81,7 @@
                 android:layout_height="72dp"
                 android:layout_weight="1"
                 android:layout_margin="4dp"
-                android:background="@attr/selectableItemBackgroundBorderless"
+                
                 android:contentDescription="@string/premium"
                 android:src="@android:drawable/ic_lock_lock" />
 
