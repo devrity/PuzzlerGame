@@ -13,6 +13,7 @@ class PuzzleBoard(private val gridSize: Int) {
     
     /**
      * Initialize the board with sliced image pieces.
+     * Creates all pieces except bottom-right, which becomes the empty space.
      */
     fun initBoard(pieceBitmaps: List<Bitmap>) {
         if (pieceBitmaps.size != totalPieces - 1) {
@@ -67,18 +68,23 @@ class PuzzleBoard(private val gridSize: Int) {
     fun movePiece(position: Int): Boolean {
         if (!canMove(position)) return false
         
-        val piece = pieces[position] ?: return false
+        val movingPiece = pieces[position] ?: return false
+        val emptyPiece = pieces[emptyPosition] ?: return false
         
-        // Swap piece with empty space
-        pieces[emptyPosition] = piece
-        pieces[position] = pieces[emptyPosition]?.copy(currentPosition = emptyPosition)
+        if (!emptyPiece.isEmptySpace) return false
         
-        piece.currentPosition = emptyPosition
+        // Update the moving piece's position
+        val updatedMovingPiece = movingPiece.copy(currentPosition = emptyPosition)
         
-        val oldEmptyPosition = emptyPosition
+        // Update the empty piece's position
+        val updatedEmptyPiece = emptyPiece.copy(currentPosition = position)
+        
+        // Swap the pieces
+        pieces[emptyPosition] = updatedMovingPiece
+        pieces[position] = updatedEmptyPiece
+        
+        // Update empty position tracker
         emptyPosition = position
-        
-        pieces[position] = pieces[oldEmptyPosition]?.copy(currentPosition = position)
         
         return true
     }
