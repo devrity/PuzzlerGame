@@ -52,7 +52,7 @@
             <ImageButton
                 android:id="@+id/home_button"
                 android:layout_width="0dp"
-                android:layout_height="56dp"
+                android:layout_height="72dp"
                 android:layout_weight="1"
                 android:layout_margin="4dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
@@ -63,7 +63,7 @@
             <ImageButton
                 android:id="@+id/restart_button"
                 android:layout_width="0dp"
-                android:layout_height="56dp"
+                android:layout_height="72dp"
                 android:layout_weight="1"
                 android:layout_margin="4dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
@@ -74,7 +74,7 @@
             <ImageButton
                 android:id="@+id/hint_button"
                 android:layout_width="0dp"
-                android:layout_height="56dp"
+                android:layout_height="72dp"
                 android:layout_weight="1"
                 android:layout_margin="4dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
@@ -85,7 +85,7 @@
             <ImageButton
                 android:id="@+id/settings_button"
                 android:layout_width="0dp"
-                android:layout_height="56dp"
+                android:layout_height="72dp"
                 android:layout_weight="1"
                 android:layout_margin="4dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
