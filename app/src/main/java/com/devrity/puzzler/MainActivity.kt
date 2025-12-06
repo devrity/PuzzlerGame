@@ -1,16 +1,22 @@
 package com.devrity.puzzler
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.view.LayoutInflater
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import com.devrity.puzzler.manager.HapticManager
 import com.devrity.puzzler.manager.ImageManager
+import com.devrity.puzzler.manager.SoundManager
 import com.devrity.puzzler.model.PuzzleBoard
 import com.devrity.puzzler.ui.GameView
 import com.devrity.puzzler.util.Constants
+import com.google.android.material.button.MaterialButton
 
 class MainActivity : AppCompatActivity() {
     
@@ -21,13 +27,21 @@ class MainActivity : AppCompatActivity() {
     private lateinit var hintButton: ImageButton
     private lateinit var settingsButton: ImageButton
     
+    private lateinit var soundManager: SoundManager
+    private lateinit var hapticManager: HapticManager
+    
     private var puzzleBoard: PuzzleBoard? = null
     private var currentImage: Bitmap? = null
     private val gridSize = Constants.DEFAULT_GRID_SIZE
+    private val handler = Handler(Looper.getMainLooper())
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        
+        // Initialize managers
+        soundManager = SoundManager(this)
+        hapticManager = HapticManager(this)
         
         initViews()
         setupListeners()
@@ -46,7 +60,14 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun setupListeners() {
-        // Game view listener for piece moves
+        // Game view listener for piece moves (with sound/haptic)
+        gameView.onPieceMoved = {
+            // Play sound and haptic on successful move
+            soundManager.playPieceMoveSound()
+            hapticManager.playPieceMoveHaptic()
+        }
+        
+        // Game view listener for win condition
         gameView.onPieceMovedListener = { isSolved ->
             if (isSolved) {
                 onPuzzleSolved()
@@ -148,12 +169,52 @@ class MainActivity : AppCompatActivity() {
     }
     
     /**
-     * Handle puzzle solved event.
+     * Handle puzzle solved event with victory sequence.
      */
     private fun onPuzzleSolved() {
+        // Disable interaction
         gameView.setInteractionEnabled(false)
-        Toast.makeText(this, "Congratulations! Puzzle solved!", Toast.LENGTH_LONG).show()
-        // TODO: Implement victory animation and dialog in Phase 2
+        
+        // Play victory sound and haptic
+        soundManager.playVictorySound()
+        hapticManager.playVictoryHaptic()
+        
+        // Wait 1 second, then hide grid lines
+        handler.postDelayed({
+            gameView.setShowGridLines(false)
+            
+            // Show victory dialog after brief delay
+            handler.postDelayed({
+                showVictoryDialog()
+            }, 500)
+        }, Constants.VICTORY_ANIMATION_DELAY)
+    }
+    
+    /**
+     * Show victory dialog with confetti and options.
+     */
+    private fun showVictoryDialog() {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_victory, null)
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
+        
+        // Set up buttons
+        val playAgainButton = dialogView.findViewById<MaterialButton>(R.id.play_again_button)
+        val newGameButton = dialogView.findViewById<MaterialButton>(R.id.new_game_button)
+        
+        playAgainButton.setOnClickListener {
+            dialog.dismiss()
+            restartGame()
+        }
+        
+        newGameButton.setOnClickListener {
+            dialog.dismiss()
+            startNewGame()
+        }
+        
+        dialog.show()
     }
     
     /**
@@ -193,7 +254,8 @@ class MainActivity : AppCompatActivity() {
     
     override fun onDestroy() {
         super.onDestroy()
-        // Clean up bitmaps
+        // Clean up resources
+        soundManager.release()
         currentImage?.recycle()
         currentImage = null
     }
