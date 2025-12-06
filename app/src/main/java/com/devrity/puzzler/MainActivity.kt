@@ -1,5 +1,6 @@
 package com.devrity.puzzler
 
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -39,6 +40,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         
+        // Hide ActionBar in landscape orientation
+        updateActionBarVisibility()
+        
         // Initialize managers
         soundManager = SoundManager(this)
         hapticManager = HapticManager(this)
@@ -48,6 +52,26 @@ class MainActivity : AppCompatActivity() {
         
         // Start a new game
         startNewGame()
+    }
+    
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        // Update ActionBar visibility when orientation changes
+        updateActionBarVisibility()
+    }
+    
+    /**
+     * Show ActionBar in portrait, hide in landscape.
+     */
+    private fun updateActionBarVisibility() {
+        when (resources.configuration.orientation) {
+            Configuration.ORIENTATION_LANDSCAPE -> {
+                supportActionBar?.hide()
+            }
+            Configuration.ORIENTATION_PORTRAIT -> {
+                supportActionBar?.show()
+            }
+        }
     }
     
     private fun initViews() {
