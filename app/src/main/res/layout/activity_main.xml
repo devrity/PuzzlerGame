@@ -44,41 +44,45 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
+        <!-- Replay Button -->
         <ImageButton
-            android:id="@+id/home_button"
+            android:id="@+id/replay_button"
             android:layout_width="72dp"
             android:layout_height="72dp"
             android:layout_margin="8dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/home"
-            android:src="@android:drawable/ic_dialog_info" />
-
-        <ImageButton
-            android:id="@+id/restart_button"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
-            android:layout_margin="8dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/restart"
+            android:background="@attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/replay"
             android:src="@android:drawable/ic_menu_revert" />
 
-        <ImageButton
-            android:id="@+id/hint_button"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
-            android:layout_margin="8dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/hint"
-            android:src="@android:drawable/ic_menu_help" />
-
+        <!-- Settings Button -->
         <ImageButton
             android:id="@+id/settings_button"
             android:layout_width="72dp"
             android:layout_height="72dp"
             android:layout_margin="8dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:background="@attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/settings"
             android:src="@android:drawable/ic_menu_manage" />
+
+        <!-- Next Button -->
+        <ImageButton
+            android:id="@+id/next_button"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_margin="8dp"
+            android:background="@attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/next"
+            android:src="@android:drawable/ic_media_next" />
+
+        <!-- Premium Button -->
+        <ImageButton
+            android:id="@+id/premium_button"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_margin="8dp"
+            android:background="@attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/premium"
+            android:src="@android:drawable/ic_lock_lock" />
 
     </LinearLayout>
 
