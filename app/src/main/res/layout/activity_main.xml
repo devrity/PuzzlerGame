@@ -12,7 +12,7 @@
         android:id="@+id/game_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_margin="16dp"
+        android:layout_margin="6dp"
         android:background="#C8E6C9"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintBottom_toTopOf="@+id/thumbnail_preview"
@@ -23,11 +23,9 @@
     <!-- Thumbnail Preview -->
     <ImageView
         android:id="@+id/thumbnail_preview"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="8dp"
+        android:layout_width="108dp"
+        android:layout_height="108dp"
+        android:layout_margin="6dp"
         android:background="#A5D6A7"
         android:padding="4dp"
         android:scaleType="centerCrop"
@@ -41,7 +39,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
-        android:layout_marginBottom="16dp"
+        android:layout_margin="6dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
