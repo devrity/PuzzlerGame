@@ -144,8 +144,7 @@ class MainActivity : AppCompatActivity() {
         thumbnailPreview.setImageBitmap(currentImage)
 
         // Create puzzle board
-        puzzleBoard = PuzzleBoard(currentImage!!, gridSize)
-
+        puzzleBoard = PuzzleBoard(gridSize, currentImage!!)
         // Set puzzle board to game view
         if (puzzleBoard != null) {
             gameView.setPuzzleBoard(puzzleBoard!!)
@@ -162,8 +161,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Create new puzzle board with same image
-        puzzleBoard = PuzzleBoard(currentImage!!, gridSize)
-
+        puzzleBoard = PuzzleBoard(gridSize, currentImage!!)
         // Set puzzle board to game view
         if (puzzleBoard != null) {
             gameView.setPuzzleBoard(puzzleBoard!!)
