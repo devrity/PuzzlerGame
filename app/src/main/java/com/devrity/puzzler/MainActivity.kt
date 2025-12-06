@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.LayoutInflater
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
@@ -17,7 +16,6 @@ import com.devrity.puzzler.manager.SoundManager
 import com.devrity.puzzler.model.PuzzleBoard
 import com.devrity.puzzler.ui.GameView
 import com.devrity.puzzler.util.Constants
-import com.google.android.material.button.MaterialButton
 
 class MainActivity : AppCompatActivity() {
 
@@ -144,7 +142,15 @@ class MainActivity : AppCompatActivity() {
         thumbnailPreview.setImageBitmap(currentImage)
 
         // Create puzzle board
-        puzzleBoard = PuzzleBoard(gridSize, currentImage!!)
+        puzzleBoard = PuzzleBoard(gridSize)
+        
+        // Slice image into pieces and initialize board
+        val pieceBitmaps = ImageManager.sliceImage(currentImage!!, gridSize)
+        puzzleBoard?.initBoard(pieceBitmaps)
+        
+        // Shuffle the board
+        puzzleBoard?.shuffle()
+
         // Set puzzle board to game view
         if (puzzleBoard != null) {
             gameView.setPuzzleBoard(puzzleBoard!!)
@@ -161,7 +167,15 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Create new puzzle board with same image
-        puzzleBoard = PuzzleBoard(gridSize, currentImage!!)
+        puzzleBoard = PuzzleBoard(gridSize)
+        
+        // Slice image into pieces and initialize board
+        val pieceBitmaps = ImageManager.sliceImage(currentImage!!, gridSize)
+        puzzleBoard?.initBoard(pieceBitmaps)
+        
+        // Shuffle the board
+        puzzleBoard?.shuffle()
+
         // Set puzzle board to game view
         if (puzzleBoard != null) {
             gameView.setPuzzleBoard(puzzleBoard!!)
