@@ -7,31 +7,27 @@
     android:background="#E8F5E9"
     tools:context=".MainActivity">
 
-    <!-- Left Panel (Controls) -->
+    <!-- Left Panel Container (30% width) -->
     <LinearLayout
         android:id="@+id/left_panel"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:background="#E8F5E9"
-        android:padding="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/game_view"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintWidth_percent="0.3">
 
-        <!-- App Title -->
-        <TextView
-            android:id="@+id/app_title"
+        <!-- Top Bar (inside left panel) -->
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/app_name"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/black"
-            android:gravity="center"
-            android:layout_marginBottom="16dp" />
+            android:layout_height="?attr/actionBarSize"
+            android:background="#E8F5E9"
+            app:title="@string/app_name"
+            app:titleTextColor="@android:color/black" />
 
         <!-- Thumbnail Preview -->
         <ImageView
@@ -39,64 +35,69 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_marginBottom="16dp"
+            android:layout_margin="8dp"
             android:background="#A5D6A7"
             android:padding="4dp"
             android:scaleType="centerCrop" />
 
-        <!-- Button Grid -->
-        <GridLayout
+        <!-- Button Row (single row, 4 buttons) -->
+        <LinearLayout
+            android:id="@+id/button_row"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:columnCount="2"
-            android:rowCount="2"
-            android:alignmentMode="alignMargins">
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_margin="6dp">
 
             <ImageButton
                 android:id="@+id/home_button"
                 android:layout_width="0dp"
-                android:layout_height="72dp"
-                android:layout_columnWeight="1"
+                android:layout_height="56dp"
+                android:layout_weight="1"
                 android:layout_margin="4dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/home"
+                android:scaleType="fitCenter"
                 android:src="@android:drawable/ic_dialog_info" />
 
             <ImageButton
                 android:id="@+id/restart_button"
                 android:layout_width="0dp"
-                android:layout_height="72dp"
-                android:layout_columnWeight="1"
+                android:layout_height="56dp"
+                android:layout_weight="1"
                 android:layout_margin="4dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/restart"
+                android:scaleType="fitCenter"
                 android:src="@android:drawable/ic_menu_revert" />
 
             <ImageButton
                 android:id="@+id/hint_button"
                 android:layout_width="0dp"
-                android:layout_height="72dp"
-                android:layout_columnWeight="1"
+                android:layout_height="56dp"
+                android:layout_weight="1"
                 android:layout_margin="4dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/hint"
+                android:scaleType="fitCenter"
                 android:src="@android:drawable/ic_menu_help" />
 
             <ImageButton
                 android:id="@+id/settings_button"
                 android:layout_width="0dp"
-                android:layout_height="72dp"
-                android:layout_columnWeight="1"
+                android:layout_height="56dp"
+                android:layout_weight="1"
                 android:layout_margin="4dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/settings"
+                android:scaleType="fitCenter"
                 android:src="@android:drawable/ic_menu_manage" />
 
-        </GridLayout>
+        </LinearLayout>
 
     </LinearLayout>
 
-    <!-- Right Panel (Game) -->
+    <!-- Right Panel (Game) - 70% width, full height -->
     <com.devrity.puzzler.ui.GameView
         android:id="@+id/game_view"
         android:layout_width="0dp"
