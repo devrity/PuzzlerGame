@@ -1,28 +1,43 @@
 {
   "version": "1.0",
-  "startNodeId": "jungle_01",
+  "startNodeId": "Astralpacaino.jpg",
   "nodes": {
-    "jungle_01": {
-      "id": "jungle_01",
-      "icon": "icon_jungle.png",
-      "puzzleFolder": "jungle",
-      "totalPuzzles": 5,
+    "Astralpacaino.jpg": {
+      "id": "Astralpacaino.jpg",
+      "icon": "puzzles/Astralpacaino.jpg",
+      "puzzleFolder": "puzzles/Astralpacaino.jpg",
+      "totalPuzzles": 1,
       "status": "UNLOCKED",
       "unlockType": "FREE",
       "requiredCompletions": 0,
       "incomingEdges": [],
-      "outgoingEdges": ["ocean_01"],
+      "outgoingEdges": [
+        "Bambina Claudina.jpg",
+        "Pingu Plutino.jpg"
+      ],
       "puzzleImagesRef": []
     },
-    "ocean_01": {
-      "id": "ocean_01",
-      "icon": "icon_ocean.png",
-      "puzzleFolder": "ocean",
-      "totalPuzzles": 5,
+    "Bambina Claudina.jpg": {
+      "id": "Bambina Claudina.jpg",
+      "icon": "puzzles/Bambina Claudina.jpg",
+      "puzzleFolder": "puzzles/Bambina Claudina.jpg",
+      "totalPuzzles": 1,
       "status": "LOCKED",
       "unlockType": "FREE",
-      "requiredCompletions": 3,
-      "incomingEdges": ["jungle_01"],
+      "requiredCompletions": 1,
+      "incomingEdges": ["Astralpacaino.jpg"],
+      "outgoingEdges": [],
+      "puzzleImagesRef": []
+    },
+    "Pingu Plutino.jpg": {
+      "id": "Pingu Plutino.jpg",
+      "icon": "puzzles/Pingu Plutino.jpg",
+      "puzzleFolder": "puzzles/Pingu Plutino.jpg",
+      "totalPuzzles": 1,
+      "status": "LOCKED",
+      "unlockType": "FREE",
+      "requiredCompletions": 1,
+      "incomingEdges": ["Astralpacaino.jpg"],
       "outgoingEdges": [],
       "puzzleImagesRef": []
     }

@@ -6,28 +6,31 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.devrity.brainnotpuzzler.adapter.PuzzleAdapter
-import com.devrity.brainnotpuzzler.manager.ProgressionManager
+import com.devrity.brainnotpuzzler.adapter.GalleryAdapter
+import com.devrity.brainnotpuzzler.manager.GalleryGraphManager
 
 class GalleryActivity : AppCompatActivity() {
 
-    private lateinit var progressionManager: ProgressionManager
+    private lateinit var galleryGraphManager: GalleryGraphManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gallery)
 
-        progressionManager = ProgressionManager(this)
+        galleryGraphManager = GalleryGraphManager(this)
 
-        val puzzleStates = progressionManager.getPuzzleStates()
+        val graph = galleryGraphManager.getGalleryGraph()
+        val nodes = graph?.nodes?.values?.toList() ?: emptyList()
 
         val recyclerView = findViewById<RecyclerView>(R.id.puzzle_grid)
         recyclerView.layoutManager = GridLayoutManager(this, 3)
-        recyclerView.adapter = PuzzleAdapter(this, puzzleStates) { puzzleId ->
-            val resultIntent = Intent()
-            resultIntent.putExtra("selected_puzzle", puzzleId)
-            setResult(Activity.RESULT_OK, resultIntent)
-            finish()
+        recyclerView.adapter = GalleryAdapter(this, nodes) { node ->
+            if (node.status == "UNLOCKED") {
+                val resultIntent = Intent()
+                resultIntent.putExtra("selected_puzzle", node.puzzleFolder)
+                setResult(Activity.RESULT_OK, resultIntent)
+                finish()
+            }
         }
     }
 }

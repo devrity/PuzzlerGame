@@ -2,7 +2,6 @@ package com.devrity.brainnotpuzzler.manager
 
 import com.google.gson.annotations.SerializedName
 
-// Enums
 enum class NodeStatus {
     LOCKED, IN_PROGRESS, UNLOCKED, COMPLETED
 }
@@ -11,7 +10,6 @@ enum class UnlockType {
     FREE, AD_REQUIRED, PREMIUM
 }
 
-// Data Models
 data class GalleryNode(
     val id: String,
     val icon: String,

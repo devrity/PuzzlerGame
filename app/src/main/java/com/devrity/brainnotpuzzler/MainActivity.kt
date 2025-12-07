@@ -12,9 +12,9 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.graphics.createBitmap
+import com.devrity.brainnotpuzzler.manager.GalleryGraphManager
 import com.devrity.brainnotpuzzler.manager.HapticManager
 import com.devrity.brainnotpuzzler.manager.ImageManager
-import com.devrity.brainnotpuzzler.manager.ProgressionManager
 import com.devrity.brainnotpuzzler.manager.SoundManager
 import com.devrity.brainnotpuzzler.model.PuzzleBoard
 import com.devrity.brainnotpuzzler.ui.GameView
@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var soundManager: SoundManager
     private lateinit var hapticManager: HapticManager
-    private lateinit var progressionManager: ProgressionManager
+    private lateinit var galleryGraphManager: GalleryGraphManager
 
     private var puzzleBoard: PuzzleBoard? = null
     private var currentImage: Bitmap? = null
@@ -54,13 +54,13 @@ class MainActivity : AppCompatActivity() {
         // Initialize managers
         soundManager = SoundManager(this)
         hapticManager = HapticManager(this)
-        progressionManager = ProgressionManager(this)
+        galleryGraphManager = GalleryGraphManager(this)
 
         initViews()
         setupListeners()
 
         // Start a new game with the first puzzle
-        startNewGame(progressionManager.getPuzzleStates().first().node.id)
+        galleryGraphManager.getStartGallery()?.let { startNewGame(it.puzzleFolder) }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        
+
         // Reload the layout and re-initialize views while preserving state
         setContentView(R.layout.activity_main)
         updateActionBarVisibility()
@@ -158,10 +158,14 @@ class MainActivity : AppCompatActivity() {
     /**
      * Start a new game with a specific puzzle image.
      */
-    private fun startNewGame(puzzleId: String) {
-        currentPuzzleId = puzzleId
-        // Load image from assets or use test pattern
-        currentImage = ImageManager.getRandomImage(this) ?: createTestImage() // This is a placeholder, needs to be fixed
+    private fun startNewGame(puzzleFolder: String?) {
+        currentPuzzleId = puzzleFolder
+
+        if (puzzleFolder == null) {
+            currentImage = ImageManager.getRandomImage(this) ?: createTestImage()
+        } else {
+            currentImage = ImageManager.getImageByPath(this, puzzleFolder) ?: createTestImage()
+        }
 
         if (currentImage == null) {
             Toast.makeText(this, "Error loading image", Toast.LENGTH_SHORT).show()
@@ -176,19 +180,19 @@ class MainActivity : AppCompatActivity() {
 
         // Create puzzle board
         puzzleBoard = PuzzleBoard(gridSize)
-        
+
         // Slice image into pieces and initialize board
         val pieceBitmaps = ImageManager.sliceImage(currentImage!!, gridSize)
         puzzleBoard?.initBoard(pieceBitmaps)
-        
+
         // Shuffle the board
         puzzleBoard?.shuffle()
 
         // Set puzzle board to game view
         if (puzzleBoard != null) {
             gameView.setPuzzleBoard(puzzleBoard!!)
-                        gameView.setShowGridLines(true)
-                                    gameView.setInteractionEnabled(true)
+            gameView.setShowGridLines(true)
+            gameView.setInteractionEnabled(true)
         }
     }
 
@@ -207,11 +211,8 @@ class MainActivity : AppCompatActivity() {
         soundManager.playVictorySound()
         hapticManager.playVictoryHaptic()
 
-        currentPuzzleId?.let {
-            progressionManager.unlockNextPuzzle(it)
-        }
-
-        // Wait 1 second then launch gallery
+        // In the final version, this will unlock the next node and open the gallery
+        // currentPuzzleId?.let { galleryGraphManager.unlockNextPuzzle(it) }
         handler.postDelayed({
             val intent = Intent(this, GalleryActivity::class.java)
             startActivityForResult(intent, GALLERY_REQUEST_CODE)
