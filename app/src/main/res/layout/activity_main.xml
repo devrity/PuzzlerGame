@@ -29,6 +29,7 @@
         android:background="#A5D6A7"
         android:padding="4dp"
         android:scaleType="centerCrop"
+        android:contentDescription="@string/thumbnail_preview"
         app:layout_constraintBottom_toTopOf="@+id/button_row"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -50,7 +51,6 @@
             android:layout_width="72dp"
             android:layout_height="72dp"
             android:layout_margin="6dp"
-            
             android:contentDescription="@string/replay"
             android:src="@android:drawable/ic_menu_revert" />
 
@@ -60,7 +60,6 @@
             android:layout_width="72dp"
             android:layout_height="72dp"
             android:layout_margin="6dp"
-            
             android:contentDescription="@string/settings"
             android:src="@android:drawable/ic_menu_manage" />
 
@@ -70,7 +69,6 @@
             android:layout_width="72dp"
             android:layout_height="72dp"
             android:layout_margin="6dp"
-            
             android:contentDescription="@string/gallery"
             android:src="@android:drawable/ic_menu_gallery" />
 
@@ -80,10 +78,14 @@
             android:layout_width="72dp"
             android:layout_height="72dp"
             android:layout_margin="6dp"
-            
             android:contentDescription="@string/premium"
             android:src="@android:drawable/ic_lock_lock" />
 
     </LinearLayout>
+
+    <nl.dionsegijn.konfetti.xml.KonfettiView
+        android:id="@+id/konfetti_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

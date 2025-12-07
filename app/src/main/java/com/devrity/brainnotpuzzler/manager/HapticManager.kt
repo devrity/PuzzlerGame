@@ -34,24 +34,6 @@ class HapticManager(context: Context) {
     }
 
     /**
-     * Light tap feedback for piece moves.
-     */
-    fun playPieceMoveHaptic() {
-        if (!isHapticEnabled() || vibrator == null) return
-
-        try {
-            vibrator.vibrate(
-                VibrationEffect.createOneShot(
-                    20, // 20 milliseconds
-                    VibrationEffect.DEFAULT_AMPLITUDE
-                )
-            )
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    /**
      * Celebration pattern for victory.
      */
     fun playVictoryHaptic() {

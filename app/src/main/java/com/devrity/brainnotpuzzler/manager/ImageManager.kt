@@ -21,20 +21,8 @@ object ImageManager {
         }
     }
 
-    fun getRandomImage(context: Context): Bitmap? {
-        return try {
-            val assetManager = context.assets
-            val imageFiles = assetManager.list(Constants.PUZZLE_IMAGES_FOLDER) ?: emptyArray()
-            if (imageFiles.isEmpty()) {
-                null
-            } else {
-                val randomFile = imageFiles.random()
-                getImageByPath(context, "${Constants.PUZZLE_IMAGES_FOLDER}/$randomFile")
-            }
-        } catch (e: IOException) {
-            e.printStackTrace()
-            null
-        }
+    fun getDefaultImage(context: Context): Bitmap? {
+        return getImageByPath(context, "puzzles/default_empty.jpg")
     }
 
     fun ensureSquare(bitmap: Bitmap): Bitmap {
@@ -47,7 +35,8 @@ object ImageManager {
         return Bitmap.createBitmap(bitmap, xOffset, yOffset, size, size)
     }
 
-    fun sliceImage(bitmap: Bitmap, gridSize: Int): List<Bitmap> {
+    fun sliceImage(bitmap: Bitmap): List<Bitmap> {
+        val gridSize = Constants.GRID_SIZE
         val pieceWidth = bitmap.width / gridSize
         val pieceHeight = bitmap.height / gridSize
         val pieces = mutableListOf<Bitmap>()

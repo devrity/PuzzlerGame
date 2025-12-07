@@ -2,6 +2,7 @@ package com.devrity.brainnotpuzzler.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -14,9 +15,6 @@ import com.devrity.brainnotpuzzler.model.PuzzlePiece
 import com.devrity.brainnotpuzzler.util.Constants
 import kotlin.math.abs
 
-/**
- * Custom view for displaying and interacting with the puzzle game.
- */
 class GameView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -25,7 +23,9 @@ class GameView @JvmOverloads constructor(
 
     private var puzzleBoard: PuzzleBoard? = null
     private var pieces: Array<PuzzlePiece?> = emptyArray()
-    private var gridSize: Int = Constants.DEFAULT_GRID_SIZE
+    private var fullImage: Bitmap? = null
+    private var isVictoryState: Boolean = false
+    private var gridSize: Int = Constants.GRID_SIZE
     private var pieceSize: Float = 0f
     private var totalSize: Float = 0f
     private var offsetX: Float = 0f
@@ -34,7 +34,6 @@ class GameView @JvmOverloads constructor(
     private var showGridLines: Boolean = true
     private var isInteractionEnabled: Boolean = false
 
-    // Paint objects for drawing
     private val piecePaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val emptySpacePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.WHITE
@@ -51,32 +50,30 @@ class GameView @JvmOverloads constructor(
         style = Paint.Style.STROKE
     }
 
-    // Reusable object for drawing to avoid allocations in onDraw
     private val pieceDrawingRect = RectF()
 
-    // Touch handling
     private var touchStartX: Float = 0f
     private var touchStartY: Float = 0f
-    private val swipeThreshold = 50f // Minimum distance for swipe
+    private val swipeThreshold = 50f
 
-    // Callbacks
     var onPieceMovedListener: ((isSolved: Boolean) -> Unit)? = null
-    var onPieceMoved: (() -> Unit)? = null  // For sound/haptic on successful move
+    var onPieceMoved: (() -> Unit)? = null
 
-    /**
-     * Initialize the game with a puzzle board.
-     */
-    fun setPuzzleBoard(board: PuzzleBoard) {
+    fun setPuzzleBoard(board: PuzzleBoard, image: Bitmap) {
         this.puzzleBoard = board
-        this.gridSize = board.getGridSize()
+        this.fullImage = image
         this.pieces = board.getPieces()
+        this.isVictoryState = false
         calculatePieceSize()
         invalidate()
     }
 
-    /**
-     * Update the pieces array and redraw.
-     */
+    fun displayFullImage() {
+        isVictoryState = true
+        isInteractionEnabled = false
+        invalidate()
+    }
+
     fun updatePieces() {
         puzzleBoard?.let {
             pieces = it.getPieces()
@@ -84,17 +81,11 @@ class GameView @JvmOverloads constructor(
         }
     }
 
-    /**
-     * Enable or disable grid lines.
-     */
     fun setShowGridLines(show: Boolean) {
         showGridLines = show
         invalidate()
     }
 
-    /**
-     * Enable or disable user interaction.
-     */
     fun setInteractionEnabled(enabled: Boolean) {
         isInteractionEnabled = enabled
     }
@@ -104,16 +95,10 @@ class GameView @JvmOverloads constructor(
         calculatePieceSize()
     }
 
-    /**
-     * Calculate the size of each puzzle piece based on view dimensions.
-     * Uses the smaller dimension to ensure the puzzle fits completely.
-     */
     private fun calculatePieceSize() {
         val size = minOf(width, height).toFloat()
         totalSize = size
         pieceSize = size / gridSize
-
-        // Center the puzzle in the view
         offsetX = (width - totalSize) / 2f
         offsetY = (height - totalSize) / 2f
     }
@@ -121,9 +106,13 @@ class GameView @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
+        if (isVictoryState && fullImage != null) {
+            canvas.drawBitmap(fullImage!!, null, pieceDrawingRect.apply { set(offsetX, offsetY, offsetX + totalSize, offsetY + totalSize) }, piecePaint)
+            return
+        }
+
         if (pieces.isEmpty()) return
 
-        // Draw each piece
         for (piece in pieces) {
             piece?.let {
                 val row = it.currentPosition / gridSize
@@ -134,36 +123,24 @@ class GameView @JvmOverloads constructor(
                 val bottom = top + pieceSize
 
                 if (it.isEmptySpace) {
-                    // Draw white square for empty space
                     canvas.drawRect(left, top, right, bottom, emptySpacePaint)
                 } else if (it.bitmap != null) {
-                    // Draw the piece bitmap, slightly inset to prevent overlap with grid lines
                     val inset = Constants.GRID_LINE_WIDTH / 2f
                     pieceDrawingRect.set(left + inset, top + inset, right - inset, bottom - inset)
-                    canvas.drawBitmap(
-                        it.bitmap,
-                        null,
-                        pieceDrawingRect,
-                        piecePaint
-                    )
+                    canvas.drawBitmap(it.bitmap, null, pieceDrawingRect, piecePaint)
                 }
             }
         }
 
-        // Draw grid lines on top of pieces
         if (showGridLines) {
             for (i in 0..gridSize) {
-                // Vertical lines
                 val x = offsetX + i * pieceSize
                 canvas.drawLine(x, offsetY, x, offsetY + totalSize, gridPaint)
-
-                // Horizontal lines
                 val y = offsetY + i * pieceSize
                 canvas.drawLine(offsetX, y, offsetX + totalSize, y, gridPaint)
             }
         }
 
-        // Draw outer border
         canvas.drawRect(offsetX, offsetY, offsetX + totalSize, offsetY + totalSize, outerBorderPaint)
     }
 
@@ -179,7 +156,6 @@ class GameView @JvmOverloads constructor(
                 touchStartY = event.y
                 return true
             }
-
             MotionEvent.ACTION_UP -> {
                 val deltaX = event.x - touchStartX
                 val deltaY = event.y - touchStartY
@@ -187,7 +163,7 @@ class GameView @JvmOverloads constructor(
 
                 if (distance < swipeThreshold) {
                     // Treat as tap
-                    performClick()
+                    handleTap(touchStartX, touchStartY)
                 } else {
                     // Treat as swipe
                     handleSwipe(touchStartX, touchStartY, deltaX, deltaY)
@@ -201,13 +177,11 @@ class GameView @JvmOverloads constructor(
 
     override fun performClick(): Boolean {
         super.performClick()
+        if (isVictoryState) return true
         handleTap(touchStartX, touchStartY)
         return true
     }
 
-    /**
-     * Handle tap gesture on a piece.
-     */
     private fun handleTap(x: Float, y: Float) {
         val position = getTouchedPosition(x, y)
         if (position != -1) {
@@ -215,14 +189,10 @@ class GameView @JvmOverloads constructor(
         }
     }
 
-    /**
-     * Handle swipe gesture.
-     */
     private fun handleSwipe(startX: Float, startY: Float, deltaX: Float, deltaY: Float) {
         val position = getTouchedPosition(startX, startY)
         if (position == -1) return
 
-        // Determine swipe direction
         val absDeltaX = abs(deltaX)
         val absDeltaY = abs(deltaY)
 
@@ -233,55 +203,42 @@ class GameView @JvmOverloads constructor(
         val emptyRow = emptyPos / gridSize
         val emptyCol = emptyPos % gridSize
 
-        // Check if swipe direction matches empty space direction
-        if (absDeltaX > absDeltaY) {
-            // Horizontal swipe
-            if (deltaX > 0 && emptyRow == row && emptyCol == col - 1) {
-                // Swipe right, empty is on left
+        if (absDeltaX > absDeltaY) { // Horizontal swipe
+            if (deltaX > 0 && emptyRow == row && emptyCol == col + 1) {
+                // Swipe Right -> Empty space must be to the right
                 movePiece(position)
-            } else if (deltaX < 0 && emptyRow == row && emptyCol == col + 1) {
-                // Swipe left, empty is on right
+            } else if (deltaX < 0 && emptyRow == row && emptyCol == col - 1) {
+                // Swipe Left -> Empty space must be to the left
                 movePiece(position)
             }
-        } else {
-            // Vertical swipe
-            if (deltaY > 0 && emptyCol == col && emptyRow == row - 1) {
-                // Swipe down, empty is above
+        } else { // Vertical swipe
+            if (deltaY > 0 && emptyCol == col && emptyRow == row + 1) {
+                // Swipe Down -> Empty space must be below
                 movePiece(position)
-            } else if (deltaY < 0 && emptyCol == col && emptyRow == row + 1) {
-                // Swipe up, empty is below
+            } else if (deltaY < 0 && emptyCol == col && emptyRow == row - 1) {
+                // Swipe Up -> Empty space must be above
                 movePiece(position)
             }
         }
     }
 
-    /**
-     * Get the position of the piece at given coordinates.
-     */
     private fun getTouchedPosition(x: Float, y: Float): Int {
-        // Check if touch is within puzzle bounds
         if (x < offsetX || x > offsetX + totalSize || y < offsetY || y > offsetY + totalSize) {
             return -1
         }
-
         val col = ((x - offsetX) / pieceSize).toInt()
         val row = ((y - offsetY) / pieceSize).toInt()
-
         if (row < 0 || row >= gridSize || col < 0 || col >= gridSize) {
             return -1
         }
-
         return row * gridSize + col
     }
 
-    /**
-     * Attempt to move a piece at given position.
-     */
     private fun movePiece(position: Int) {
         puzzleBoard?.let { board ->
             if (board.movePiece(position)) {
                 updatePieces()
-                onPieceMoved?.invoke()  // Trigger sound/haptic feedback
+                onPieceMoved?.invoke()
                 onPieceMovedListener?.invoke(board.isSolved())
             }
         }

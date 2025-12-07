@@ -4,22 +4,25 @@ import android.app.Activity
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Bitmap
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.core.graphics.createBitmap
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import com.devrity.brainnotpuzzler.manager.GalleryGraphManager
 import com.devrity.brainnotpuzzler.manager.HapticManager
 import com.devrity.brainnotpuzzler.manager.ImageManager
-import com.devrity.brainnotpuzzler.manager.NodeStatus
+import com.devrity.brainnotpuzzler.model.NodeStatus
 import com.devrity.brainnotpuzzler.manager.SoundManager
 import com.devrity.brainnotpuzzler.model.PuzzleBoard
 import com.devrity.brainnotpuzzler.ui.GameView
-import com.devrity.brainnotpuzzler.util.Constants
+import nl.dionsegijn.konfetti.core.Party
+import nl.dionsegijn.konfetti.core.emitter.Emitter
+import nl.dionsegijn.konfetti.xml.KonfettiView
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,6 +32,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var settingsButton: ImageButton
     private lateinit var galleryButton: ImageButton
     private lateinit var premiumButton: ImageButton
+    private lateinit var konfettiView: KonfettiView
 
     private lateinit var soundManager: SoundManager
     private lateinit var hapticManager: HapticManager
@@ -37,22 +41,27 @@ class MainActivity : AppCompatActivity() {
     private var puzzleBoard: PuzzleBoard? = null
     private var currentImage: Bitmap? = null
     private var currentPuzzleId: String? = null
-    private val gridSize = Constants.DEFAULT_GRID_SIZE
+
     private val handler = Handler(Looper.getMainLooper())
 
+    private val galleryLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (it.resultCode == Activity.RESULT_OK) {
+            it.data?.getStringExtra("selected_puzzle_id")?.let {
+                startNewGame(it)
+            }
+        }
+    }
+
     companion object {
-        private const val GALLERY_REQUEST_CODE = 1
+        private const val KEY_CURRENT_PUZZLE_ID = "KEY_CURRENT_PUZZLE_ID"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContentView(R.layout.activity_main)
 
-        // Hide ActionBar in landscape orientation
         updateActionBarVisibility()
 
-        // Initialize managers
         soundManager = SoundManager(this)
         hapticManager = HapticManager(this)
         galleryGraphManager = GalleryGraphManager(this)
@@ -60,45 +69,24 @@ class MainActivity : AppCompatActivity() {
         initViews()
         setupListeners()
 
-        // Start a new game with the first puzzle in the progression
-        galleryGraphManager.getStartGallery()?.let { startNewGame(it.id) }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == GALLERY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            data?.getStringExtra("selected_puzzle_id")?.let {
-                startNewGame(it)
-            }
+        if (savedInstanceState != null) {
+            val savedPuzzleId = savedInstanceState.getString(KEY_CURRENT_PUZZLE_ID)
+            startNewGame(savedPuzzleId)
+        } else {
+            galleryGraphManager.getStartGallery()?.let { startNewGame(it.id) }
         }
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-
-        // Reload the layout and re-initialize views while preserving state
-        setContentView(R.layout.activity_main)
-        updateActionBarVisibility()
-        initViews()
-        setupListeners()
-
-        // Restore the state of the puzzle
-        puzzleBoard?.let {
-            gameView.setPuzzleBoard(it)
-        }
-        currentImage?.let {
-            thumbnailPreview.setImageBitmap(it)
-        }
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(KEY_CURRENT_PUZZLE_ID, currentPuzzleId)
     }
 
     private fun updateActionBarVisibility() {
         when (resources.configuration.orientation) {
-            Configuration.ORIENTATION_LANDSCAPE -> {
-                supportActionBar?.hide()
-            }
-            Configuration.ORIENTATION_PORTRAIT -> {
-                supportActionBar?.show()
-            }
+            Configuration.ORIENTATION_LANDSCAPE -> supportActionBar?.hide()
+            Configuration.ORIENTATION_PORTRAIT -> supportActionBar?.show()
+            else -> {}
         }
     }
 
@@ -109,12 +97,12 @@ class MainActivity : AppCompatActivity() {
         settingsButton = findViewById(R.id.settings_button)
         galleryButton = findViewById(R.id.gallery_button)
         premiumButton = findViewById(R.id.premium_button)
+        konfettiView = findViewById(R.id.konfetti_view)
     }
 
     private fun setupListeners() {
         gameView.onPieceMoved = {
             soundManager.playPieceMoveSound()
-            hapticManager.playPieceMoveHaptic()
         }
 
         gameView.onPieceMovedListener = { isSolved ->
@@ -124,7 +112,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         replayButton.setOnClickListener {
-            currentPuzzleId?.let { replayGame(it) }
+            currentPuzzleId?.let { startNewGame(it) }
         }
 
         settingsButton.setOnClickListener {
@@ -132,8 +120,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         galleryButton.setOnClickListener {
-            val intent = Intent(this, GalleryActivity::class.java)
-            startActivityForResult(intent, GALLERY_REQUEST_CODE)
+            launchGallery()
         }
 
         premiumButton.setOnClickListener {
@@ -151,29 +138,30 @@ class MainActivity : AppCompatActivity() {
         val puzzleNode = galleryGraphManager.getGalleryNode(puzzleId ?: "")
         val imagePath = puzzleNode?.puzzleFolder
 
-        if (imagePath == null) {
-            currentImage = ImageManager.getRandomImage(this) ?: createTestImage()
+        currentImage = if (imagePath == null) {
+            ImageManager.getDefaultImage(this)
         } else {
-            currentImage = ImageManager.getImageByPath(this, imagePath) ?: createTestImage()
+            ImageManager.getImageByPath(this, imagePath)
+        }
+        
+        if (currentImage == null) {
+            Toast.makeText(this, "Error: Could not load any image.", Toast.LENGTH_LONG).show()
+            return
         }
 
         currentImage = ImageManager.ensureSquare(currentImage!!)
         thumbnailPreview.setImageBitmap(currentImage)
 
-        puzzleBoard = PuzzleBoard(gridSize)
-        val pieceBitmaps = ImageManager.sliceImage(currentImage!!, gridSize)
+        puzzleBoard = PuzzleBoard()
+        val pieceBitmaps = ImageManager.sliceImage(currentImage!!)
         puzzleBoard?.initBoard(pieceBitmaps)
         puzzleBoard?.shuffle()
 
         if (puzzleBoard != null) {
-            gameView.setPuzzleBoard(puzzleBoard!!)
+            gameView.setPuzzleBoard(puzzleBoard!!, currentImage!!)
             gameView.setShowGridLines(true)
             gameView.setInteractionEnabled(true)
         }
-    }
-
-    private fun replayGame(puzzleId: String) {
-        startNewGame(puzzleId)
     }
 
     private fun onPuzzleSolved() {
@@ -185,14 +173,35 @@ class MainActivity : AppCompatActivity() {
             galleryGraphManager.unlockOutgoingNodesFor(it)
         }
 
-        handler.postDelayed({
-            val intent = Intent(this, GalleryActivity::class.java)
-            startActivityForResult(intent, GALLERY_REQUEST_CODE)
-        }, 1000)
+        gameView.displayFullImage()
+        showVictoryConfetti()
+
+        val galleryRunnable = Runnable { launchGallery() }
+        handler.postDelayed(galleryRunnable, 3000)
+
+        konfettiView.setOnClickListener {
+            handler.removeCallbacks(galleryRunnable)
+            launchGallery()
+        }
     }
 
-    private fun createTestImage(): Bitmap {
-        return createBitmap(300, 300, Bitmap.Config.ARGB_8888)
+    private fun showVictoryConfetti() {
+        konfettiView.start(
+            Party(
+                speed = 0f,
+                maxSpeed = 30f,
+                damping = 0.9f,
+                spread = 360,
+                colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
+                emitter = Emitter(duration = 100, TimeUnit.MILLISECONDS).max(100),
+                position = nl.dionsegijn.konfetti.core.Position.Relative(0.5, 0.3)
+            )
+        )
+    }
+
+    private fun launchGallery() {
+        val intent = Intent(this, GalleryActivity::class.java)
+        galleryLauncher.launch(intent)
     }
 
     override fun onDestroy() {

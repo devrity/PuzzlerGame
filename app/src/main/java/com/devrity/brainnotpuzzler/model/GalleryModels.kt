@@ -1,4 +1,4 @@
-package com.devrity.brainnotpuzzler.manager
+package com.devrity.brainnotpuzzler.model
 
 import com.google.gson.annotations.SerializedName
 
@@ -29,11 +29,4 @@ data class GalleryGraph(
     val version: String,
     val startNodeId: String,
     val nodes: Map<String, GalleryNode>
-)
-
-data class GalleryNodeStatus(
-    val nodeId: String,
-    val completionCount: Int,
-    val isUnlocked: Boolean,
-    val nodeStatus: NodeStatus
 )

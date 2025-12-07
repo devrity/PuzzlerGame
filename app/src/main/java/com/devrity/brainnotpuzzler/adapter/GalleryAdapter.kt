@@ -1,19 +1,19 @@
 package com.devrity.brainnotpuzzler.adapter
 
 import android.content.Context
-import android.graphics.Color
 import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.devrity.brainnotpuzzler.R
 import com.devrity.brainnotpuzzler.manager.GalleryGraphManager
-import com.devrity.brainnotpuzzler.manager.GalleryNode
+import com.devrity.brainnotpuzzler.model.GalleryNode
 import com.devrity.brainnotpuzzler.manager.ImageManager
-import com.devrity.brainnotpuzzler.manager.NodeStatus
+import com.devrity.brainnotpuzzler.model.NodeStatus
 
 class GalleryAdapter(
     private val context: Context,
@@ -49,19 +49,19 @@ class GalleryAdapter(
                     matrix.setSaturation(0f) // Grayscale
                     iconView.colorFilter = ColorMatrixColorFilter(matrix)
                     itemView.setOnClickListener(null)
-                    itemView.setBackgroundColor(Color.TRANSPARENT)
+                    itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.gallery_item_background_default))
                 }
                 NodeStatus.UNLOCKED, NodeStatus.IN_PROGRESS -> {
                     lockIcon.visibility = View.GONE
                     iconView.colorFilter = null
                     itemView.setOnClickListener { onNodeSelected(node) }
-                    itemView.setBackgroundColor(Color.TRANSPARENT)
+                    itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.gallery_item_background_default))
                 }
                 NodeStatus.COMPLETED -> {
                     lockIcon.visibility = View.GONE
                     iconView.colorFilter = null
                     itemView.setOnClickListener { onNodeSelected(node) }
-                    itemView.setBackgroundColor(Color.parseColor("#FFD700")) // Gold
+                    itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.gallery_completed_gold))
                 }
             }
         }

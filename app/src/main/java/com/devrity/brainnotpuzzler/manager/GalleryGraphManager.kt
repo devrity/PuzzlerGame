@@ -2,6 +2,9 @@ package com.devrity.brainnotpuzzler.manager
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.devrity.brainnotpuzzler.model.GalleryGraph
+import com.devrity.brainnotpuzzler.model.GalleryNode
+import com.devrity.brainnotpuzzler.model.NodeStatus
 import com.devrity.brainnotpuzzler.util.Constants
 import com.google.gson.Gson
 import java.io.InputStreamReader
@@ -41,22 +44,12 @@ class GalleryGraphManager(private val context: Context) {
         return galleryGraph?.nodes?.get(nodeId)
     }
 
-    fun isNodeUnlocked(nodeId: String): Boolean {
-        if (nodeId == galleryGraph?.startNodeId) {
-            return true
-        }
-        return prefs.getBoolean("unlocked_$nodeId", false)
-    }
-
     fun getNodeStatus(nodeId: String): NodeStatus {
-        val statusString = prefs.getString("status_$nodeId", null)
-        return if (statusString != null) {
-            NodeStatus.valueOf(statusString)
-        } else if (isNodeUnlocked(nodeId)) {
-            NodeStatus.UNLOCKED
-        } else {
-            NodeStatus.LOCKED
+        if (nodeId == galleryGraph?.startNodeId && prefs.getString("status_$nodeId", null) == null) {
+            return NodeStatus.UNLOCKED
         }
+        val statusString = prefs.getString("status_$nodeId", NodeStatus.LOCKED.name)
+        return NodeStatus.valueOf(statusString ?: NodeStatus.LOCKED.name)
     }
 
     fun setNodeStatus(nodeId: String, status: NodeStatus) {
@@ -65,7 +58,10 @@ class GalleryGraphManager(private val context: Context) {
 
     fun unlockOutgoingNodesFor(nodeId: String) {
         getGalleryNode(nodeId)?.outgoingEdges?.forEach { unlockedNodeId ->
-            prefs.edit().putBoolean("unlocked_$unlockedNodeId", true).apply()
+            // Only unlock if it's currently locked, to avoid overwriting a COMPLETED status
+            if (getNodeStatus(unlockedNodeId) == NodeStatus.LOCKED) {
+                setNodeStatus(unlockedNodeId, NodeStatus.UNLOCKED)
+            }
         }
     }
 }
