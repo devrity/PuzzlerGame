@@ -1,4 +1,4 @@
-package com.devrity.puzzler.manager
+package com.devrity.brainnotpuzzler.manager
 
 import com.google.gson.annotations.SerializedName
 import com.google.gson.Gson

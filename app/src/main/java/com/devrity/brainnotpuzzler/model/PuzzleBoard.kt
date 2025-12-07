@@ -1,4 +1,4 @@
-package com.devrity.puzzler.model
+package com.devrity.brainnotpuzzler.model
 
 import android.graphics.Bitmap
 import kotlin.math.abs

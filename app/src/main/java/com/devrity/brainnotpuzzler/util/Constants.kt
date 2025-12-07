@@ -1,4 +1,4 @@
-package com.devrity.puzzler.util
+package com.devrity.brainnotpuzzler.util
 
 object Constants {
     // Grid configuration

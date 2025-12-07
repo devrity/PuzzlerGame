@@ -1,4 +1,4 @@
-package com.devrity.puzzler.ui
+package com.devrity.brainnotpuzzler.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -9,9 +9,9 @@ import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
-import com.devrity.puzzler.model.PuzzleBoard
-import com.devrity.puzzler.model.PuzzlePiece
-import com.devrity.puzzler.util.Constants
+import com.devrity.brainnotpuzzler.model.PuzzleBoard
+import com.devrity.brainnotpuzzler.model.PuzzlePiece
+import com.devrity.brainnotpuzzler.util.Constants
 import kotlin.math.abs
 
 /**

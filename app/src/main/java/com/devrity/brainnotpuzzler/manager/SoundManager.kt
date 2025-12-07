@@ -1,4 +1,4 @@
-package com.devrity.puzzler.manager
+package com.devrity.brainnotpuzzler.manager
 
 import android.content.Context
 import android.media.AudioAttributes
@@ -6,7 +6,7 @@ import android.media.SoundPool
 import android.media.ToneGenerator
 import android.media.AudioManager
 import android.content.SharedPreferences
-import com.devrity.puzzler.util.Constants
+import com.devrity.brainnotpuzzler.util.Constants
 
 /**
  * Manages game sound effects.

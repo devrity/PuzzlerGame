@@ -1,9 +1,9 @@
-package com.devrity.puzzler.manager
+package com.devrity.brainnotpuzzler.manager
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import com.devrity.puzzler.util.Constants
+import com.devrity.brainnotpuzzler.util.Constants
 import java.io.IOException
 
 /**
@@ -98,27 +98,5 @@ object ImageManager {
         }
         
         return pieces
-    }
-    
-    /**
-     * Scale a bitmap to a specific size while maintaining aspect ratio.
-     * @param bitmap The source bitmap
-     * @param maxSize Maximum width/height
-     * @return Scaled bitmap
-     */
-    fun scaleBitmap(bitmap: Bitmap, maxSize: Int): Bitmap {
-        if (bitmap.width <= maxSize && bitmap.height <= maxSize) {
-            return bitmap
-        }
-        
-        val ratio = minOf(
-            maxSize.toFloat() / bitmap.width,
-            maxSize.toFloat() / bitmap.height
-        )
-        
-        val width = (bitmap.width * ratio).toInt()
-        val height = (bitmap.height * ratio).toInt()
-        
-        return Bitmap.createScaledBitmap(bitmap, width, height, true)
     }
 }

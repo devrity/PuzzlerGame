@@ -8,7 +8,7 @@
     tools:context=".MainActivity">
 
     <!-- Puzzle Game View -->
-    <com.devrity.puzzler.ui.GameView
+    <com.devrity.brainnotpuzzler.ui.GameView
         android:id="@+id/game_view"
         android:layout_width="0dp"
         android:layout_height="0dp"

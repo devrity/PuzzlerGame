@@ -1,4 +1,4 @@
-package com.devrity.puzzler.manager
+package com.devrity.brainnotpuzzler.manager
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -6,7 +6,7 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
-import com.devrity.puzzler.util.Constants
+import com.devrity.brainnotpuzzler.util.Constants
 
 /**
  * Manages haptic feedback (vibration).

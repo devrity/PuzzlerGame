@@ -1,4 +1,4 @@
-package com.devrity.puzzler.manager
+package com.devrity.brainnotpuzzler.manager
 
 import android.content.Context
 import com.google.gson.Gson

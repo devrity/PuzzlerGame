@@ -1,4 +1,4 @@
-package com.devrity.puzzler
+package com.devrity.brainnotpuzzler
 
 import android.content.res.Configuration
 import android.graphics.Bitmap
@@ -10,12 +10,12 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import com.devrity.puzzler.manager.HapticManager
-import com.devrity.puzzler.manager.ImageManager
-import com.devrity.puzzler.manager.SoundManager
-import com.devrity.puzzler.model.PuzzleBoard
-import com.devrity.puzzler.ui.GameView
-import com.devrity.puzzler.util.Constants
+import com.devrity.brainnotpuzzler.manager.HapticManager
+import com.devrity.brainnotpuzzler.manager.ImageManager
+import com.devrity.brainnotpuzzler.manager.SoundManager
+import com.devrity.brainnotpuzzler.model.PuzzleBoard
+import com.devrity.brainnotpuzzler.ui.GameView
+import com.devrity.brainnotpuzzler.util.Constants
 
 class MainActivity : AppCompatActivity() {
 
@@ -210,12 +210,12 @@ class MainActivity : AppCompatActivity() {
      */
     private fun showVictoryDialog() {
         val builder = AlertDialog.Builder(this)
-        builder.setTitle("🎉 Congratulations! 🎉")
-        builder.setMessage("You solved the puzzle!")
-        builder.setPositiveButton("Play Again") { _, _ ->
+        builder.setTitle(R.string.congratulations)
+        builder.setMessage(R.string.puzzle_solved)
+        builder.setPositiveButton(R.string.play_again) { _, _ ->
             replayGame()
         }
-        builder.setNegativeButton("New Game") { _, _ ->
+        builder.setNegativeButton(R.string.new_game) { _, _ ->
             startNewGame()
         }
         builder.setCancelable(false)
