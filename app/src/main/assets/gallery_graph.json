@@ -1,90 +1,30 @@
 {
   "version": "1.0",
-  "startNodeId": "gallery_0",
+  "startNodeId": "jungle_01",
   "nodes": {
-    "gallery_0": {
-      "id": "gallery_0",
-      "icon": "🎬",
-      "puzzleFolder": "puzzles/start/",
-      "totalPuzzles": 0,
+    "jungle_01": {
+      "id": "jungle_01",
+      "icon": "icon_jungle.png",
+      "puzzleFolder": "jungle",
+      "totalPuzzles": 5,
       "status": "UNLOCKED",
       "unlockType": "FREE",
       "requiredCompletions": 0,
       "incomingEdges": [],
-      "outgoingEdges": ["gallery_1", "gallery_2"],
+      "outgoingEdges": ["ocean_01"],
       "puzzleImagesRef": []
     },
-    "gallery_1": {
-      "id": "gallery_1",
-      "icon": "🐻",
-      "puzzleFolder": "puzzles/animals/",
-      "totalPuzzles": 20,
-      "status": "UNLOCKED",
+    "ocean_01": {
+      "id": "ocean_01",
+      "icon": "icon_ocean.png",
+      "puzzleFolder": "ocean",
+      "totalPuzzles": 5,
+      "status": "LOCKED",
       "unlockType": "FREE",
-      "requiredCompletions": 0,
-      "incomingEdges": ["gallery_0"],
-      "outgoingEdges": ["gallery_3", "gallery_4"],
-      "puzzleImagesRef": ["animals/lion.jpg", "animals/bear.jpg", "animals/elephant.jpg"]
-    },
-    "gallery_2": {
-      "id": "gallery_2",
-      "icon": "🌲",
-      "puzzleFolder": "puzzles/nature/",
-      "totalPuzzles": 18,
-      "status": "IN_PROGRESS",
-      "unlockType": "FREE",
-      "requiredCompletions": 5,
-      "incomingEdges": ["gallery_0"],
-      "outgoingEdges": ["gallery_3", "gallery_5"],
-      "puzzleImagesRef": ["nature/tree.jpg", "nature/forest.jpg", "nature/mountain.jpg"]
-    },
-    "gallery_3": {
-      "id": "gallery_3",
-      "icon": "🎨",
-      "puzzleFolder": "puzzles/art/",
-      "totalPuzzles": 15,
-      "status": "LOCKED",
-      "unlockType": "AD_REQUIRED",
-      "requiredCompletions": 5,
-      "incomingEdges": ["gallery_1", "gallery_2"],
-      "outgoingEdges": ["gallery_6"],
-      "puzzleImagesRef": ["art/painting1.jpg", "art/painting2.jpg"]
-    },
-    "gallery_4": {
-      "id": "gallery_4",
-      "icon": "🚀",
-      "puzzleFolder": "puzzles/space/",
-      "totalPuzzles": 22,
-      "status": "LOCKED",
-      "unlockType": "PREMIUM",
-      "requiredCompletions": 8,
-      "incomingEdges": ["gallery_1"],
-      "outgoingEdges": ["gallery_6"],
-      "puzzleImagesRef": ["space/planet.jpg", "space/rocket.jpg"]
-    },
-    "gallery_5": {
-      "id": "gallery_5",
-      "icon": "🏰",
-      "puzzleFolder": "puzzles/landmarks/",
-      "totalPuzzles": 19,
-      "status": "LOCKED",
-      "unlockType": "AD_REQUIRED",
-      "requiredCompletions": 5,
-      "incomingEdges": ["gallery_2"],
+      "requiredCompletions": 3,
+      "incomingEdges": ["jungle_01"],
       "outgoingEdges": [],
-      "puzzleImagesRef": ["landmarks/castle.jpg", "landmarks/pyramid.jpg"]
-    },
-    "gallery_6": {
-      "id": "gallery_6",
-      "icon": "🌊",
-      "puzzleFolder": "puzzles/ocean/",
-      "totalPuzzles": 21,
-      "status": "LOCKED",
-      "unlockType": "PREMIUM",
-      "requiredCompletions": 10,
-      "incomingEdges": ["gallery_3", "gallery_4"],
-      "outgoingEdges": [],
-      "puzzleImagesRef": ["ocean/dolphin.jpg", "ocean/whale.jpg"]
+      "puzzleImagesRef": []
     }
   }
 }

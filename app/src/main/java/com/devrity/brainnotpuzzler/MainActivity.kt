@@ -1,5 +1,6 @@
 package com.devrity.brainnotpuzzler
 
+import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import androidx.appcompat.app.AppCompatActivity
@@ -24,7 +25,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var thumbnailPreview: ImageView
     private lateinit var replayButton: ImageButton
     private lateinit var settingsButton: ImageButton
-    // private lateinit var nextButton: ImageButton
+    private lateinit var galleryButton: ImageButton
     private lateinit var premiumButton: ImageButton
 
     private lateinit var soundManager: SoundManager
@@ -91,7 +92,7 @@ class MainActivity : AppCompatActivity() {
         thumbnailPreview = findViewById(R.id.thumbnail_preview)
         replayButton = findViewById(R.id.replay_button)
         settingsButton = findViewById(R.id.settings_button)
-        // nextButton = findViewById(R.id.next_button)
+        galleryButton = findViewById(R.id.gallery_button)
         premiumButton = findViewById(R.id.premium_button)
     }
 
@@ -120,10 +121,11 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Settings - Coming soon!", Toast.LENGTH_SHORT).show()
         }
 
-        // Next button - load random new puzzle
-        // nextButton.setOnClickListener {
-        //     startNewGame()
-        // }
+        // Gallery button - launch gallery activity
+        galleryButton.setOnClickListener {
+            val intent = Intent(this, GalleryActivity::class.java)
+            startActivity(intent)
+        }
 
         // Premium button - placeholder (no backend yet)
         premiumButton.setOnClickListener {
@@ -230,6 +232,10 @@ class MainActivity : AppCompatActivity() {
         }
         builder.setNegativeButton(R.string.new_game) { _, _ ->
             startNewGame()
+        }
+        builder.setNeutralButton(R.string.gallery) { _, _ ->
+            val intent = Intent(this, GalleryActivity::class.java)
+            startActivity(intent)
         }
         builder.setCancelable(false)
         builder.show()
