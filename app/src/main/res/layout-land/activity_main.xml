@@ -30,7 +30,8 @@
             android:layout_marginBottom="8dp"
             android:background="#A5D6A7"
             android:padding="4dp"
-            android:scaleType="centerCrop" />
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/thumbnail_preview" />
 
         <!-- Button Row (single row, 4 buttons) -->
         <LinearLayout
@@ -90,7 +91,7 @@
     </LinearLayout>
 
     <!-- Right Panel - Game View (70% width) -->
-    <com.devrity.puzzler.ui.GameView
+    <com.devrity.brainnotpuzzler.ui.GameView
         android:id="@+id/game_view"
         android:layout_width="0dp"
         android:layout_height="match_parent"

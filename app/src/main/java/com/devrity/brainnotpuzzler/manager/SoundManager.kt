@@ -14,8 +14,6 @@ import com.devrity.brainnotpuzzler.util.Constants
 class SoundManager(private val context: Context) {
     
     private var soundPool: SoundPool? = null
-    private var pieceMoveSound: Int = 0
-    private var victorySound: Int = 0
     
     private val prefs: SharedPreferences = context.getSharedPreferences(
         Constants.PREFS_NAME, 
@@ -42,8 +40,8 @@ class SoundManager(private val context: Context) {
         
         // For now, we'll use system sounds
         // In the future, load custom sound files from res/raw/
-        // pieceMoveSound = soundPool?.load(context, R.raw.piece_move, 1) ?: 0
-        // victorySound = soundPool?.load(context, R.raw.victory, 1) ?: 0
+        // val pieceMoveSound = soundPool?.load(context, R.raw.piece_move, 1) ?: 0
+        // val victorySound = soundPool?.load(context, R.raw.victory, 1) ?: 0
     }
     
     /**
@@ -51,13 +49,6 @@ class SoundManager(private val context: Context) {
      */
     fun isSoundEnabled(): Boolean {
         return prefs.getBoolean(Constants.KEY_SOUND_ENABLED, true)
-    }
-    
-    /**
-     * Set sound enabled/disabled.
-     */
-    fun setSoundEnabled(enabled: Boolean) {
-        prefs.edit().putBoolean(Constants.KEY_SOUND_ENABLED, enabled).apply()
     }
     
     /**
