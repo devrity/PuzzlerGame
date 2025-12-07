@@ -24,13 +24,11 @@ class GalleryActivity : AppCompatActivity() {
 
         val recyclerView = findViewById<RecyclerView>(R.id.puzzle_grid)
         recyclerView.layoutManager = GridLayoutManager(this, 3)
-        recyclerView.adapter = GalleryAdapter(this, nodes) { node ->
-            if (node.status == "UNLOCKED") {
-                val resultIntent = Intent()
-                resultIntent.putExtra("selected_puzzle", node.puzzleFolder)
-                setResult(Activity.RESULT_OK, resultIntent)
-                finish()
-            }
+        recyclerView.adapter = GalleryAdapter(this, nodes, galleryGraphManager) { node ->
+            val resultIntent = Intent()
+            resultIntent.putExtra("selected_puzzle_id", node.id)
+            setResult(Activity.RESULT_OK, resultIntent)
+            finish()
         }
     }
 }

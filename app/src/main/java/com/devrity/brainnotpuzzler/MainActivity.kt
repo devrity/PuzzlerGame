@@ -15,6 +15,7 @@ import androidx.core.graphics.createBitmap
 import com.devrity.brainnotpuzzler.manager.GalleryGraphManager
 import com.devrity.brainnotpuzzler.manager.HapticManager
 import com.devrity.brainnotpuzzler.manager.ImageManager
+import com.devrity.brainnotpuzzler.manager.NodeStatus
 import com.devrity.brainnotpuzzler.manager.SoundManager
 import com.devrity.brainnotpuzzler.model.PuzzleBoard
 import com.devrity.brainnotpuzzler.ui.GameView
@@ -59,14 +60,14 @@ class MainActivity : AppCompatActivity() {
         initViews()
         setupListeners()
 
-        // Start a new game with the first puzzle
-        galleryGraphManager.getStartGallery()?.let { startNewGame(it.puzzleFolder) }
+        // Start a new game with the first puzzle in the progression
+        galleryGraphManager.getStartGallery()?.let { startNewGame(it.id) }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == GALLERY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            data?.getStringExtra("selected_puzzle")?.let {
+            data?.getStringExtra("selected_puzzle_id")?.let {
                 startNewGame(it)
             }
         }
@@ -90,9 +91,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Show ActionBar in portrait, hide in landscape.
-     */
     private fun updateActionBarVisibility() {
         when (resources.configuration.orientation) {
             Configuration.ORIENTATION_LANDSCAPE -> {
@@ -114,81 +112,59 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
-        // Game view listener for piece moves (with sound/haptic)
         gameView.onPieceMoved = {
-            // Play sound and haptic on successful move
             soundManager.playPieceMoveSound()
             hapticManager.playPieceMoveHaptic()
         }
 
-        // Game view listener for win condition
         gameView.onPieceMovedListener = { isSolved ->
             if (isSolved) {
                 onPuzzleSolved()
             }
         }
 
-        // Replay button - restart current puzzle
         replayButton.setOnClickListener {
             currentPuzzleId?.let { replayGame(it) }
         }
 
-        // Settings button - placeholder
         settingsButton.setOnClickListener {
             Toast.makeText(this, "Settings - Coming soon!", Toast.LENGTH_SHORT).show()
         }
 
-        // Gallery button - launch gallery activity
         galleryButton.setOnClickListener {
             val intent = Intent(this, GalleryActivity::class.java)
             startActivityForResult(intent, GALLERY_REQUEST_CODE)
         }
 
-        // Premium button - placeholder (no backend yet)
         premiumButton.setOnClickListener {
             Toast.makeText(this, "Premium coming in Phase 4!", Toast.LENGTH_SHORT).show()
         }
 
-        // Thumbnail click - placeholder for fullscreen view
         thumbnailPreview.setOnClickListener {
             Toast.makeText(this, "Fullscreen preview - Coming soon!", Toast.LENGTH_SHORT).show()
         }
     }
 
-    /**
-     * Start a new game with a specific puzzle image.
-     */
-    private fun startNewGame(puzzleFolder: String?) {
-        currentPuzzleId = puzzleFolder
+    private fun startNewGame(puzzleId: String?) {
+        currentPuzzleId = puzzleId
 
-        if (puzzleFolder == null) {
+        val puzzleNode = galleryGraphManager.getGalleryNode(puzzleId ?: "")
+        val imagePath = puzzleNode?.puzzleFolder
+
+        if (imagePath == null) {
             currentImage = ImageManager.getRandomImage(this) ?: createTestImage()
         } else {
-            currentImage = ImageManager.getImageByPath(this, puzzleFolder) ?: createTestImage()
+            currentImage = ImageManager.getImageByPath(this, imagePath) ?: createTestImage()
         }
 
-        if (currentImage == null) {
-            Toast.makeText(this, "Error loading image", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        // Ensure image is square
         currentImage = ImageManager.ensureSquare(currentImage!!)
-
-        // Set thumbnail
         thumbnailPreview.setImageBitmap(currentImage)
 
-        // Create puzzle board
         puzzleBoard = PuzzleBoard(gridSize)
-
-        // Slice image into pieces and initialize board
         val pieceBitmaps = ImageManager.sliceImage(currentImage!!, gridSize)
         puzzleBoard?.initBoard(pieceBitmaps)
-
-        // Shuffle the board
         puzzleBoard?.shuffle()
 
-        // Set puzzle board to game view
         if (puzzleBoard != null) {
             gameView.setPuzzleBoard(puzzleBoard!!)
             gameView.setShowGridLines(true)
@@ -196,34 +172,26 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Replay current puzzle - restart with same image but reshuffled
-     */
     private fun replayGame(puzzleId: String) {
         startNewGame(puzzleId)
     }
 
-    /**
-     * Called when puzzle is solved
-     */
     private fun onPuzzleSolved() {
-        // Play victory sound and haptic
         soundManager.playVictorySound()
         hapticManager.playVictoryHaptic()
 
-        // In the final version, this will unlock the next node and open the gallery
-        // currentPuzzleId?.let { galleryGraphManager.unlockNextPuzzle(it) }
+        currentPuzzleId?.let {
+            galleryGraphManager.setNodeStatus(it, NodeStatus.COMPLETED)
+            galleryGraphManager.unlockOutgoingNodesFor(it)
+        }
+
         handler.postDelayed({
             val intent = Intent(this, GalleryActivity::class.java)
             startActivityForResult(intent, GALLERY_REQUEST_CODE)
         }, 1000)
     }
 
-    /**
-     * Create a test image (temporary fallback)
-     */
     private fun createTestImage(): Bitmap {
-        // Placeholder - will be replaced with actual image loading
         return createBitmap(300, 300, Bitmap.Config.ARGB_8888)
     }
 

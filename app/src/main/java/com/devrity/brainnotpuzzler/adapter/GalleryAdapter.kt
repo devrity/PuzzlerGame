@@ -1,6 +1,7 @@
 package com.devrity.brainnotpuzzler.adapter
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
 import android.view.LayoutInflater
@@ -9,12 +10,15 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.devrity.brainnotpuzzler.R
+import com.devrity.brainnotpuzzler.manager.GalleryGraphManager
 import com.devrity.brainnotpuzzler.manager.GalleryNode
 import com.devrity.brainnotpuzzler.manager.ImageManager
+import com.devrity.brainnotpuzzler.manager.NodeStatus
 
 class GalleryAdapter(
     private val context: Context,
     private val nodes: List<GalleryNode>,
+    private val galleryGraphManager: GalleryGraphManager,
     private val onNodeSelected: (GalleryNode) -> Unit
 ) : RecyclerView.Adapter<GalleryAdapter.NodeViewHolder>() {
 
@@ -38,18 +42,27 @@ class GalleryAdapter(
             val bitmap = ImageManager.getImageByPath(context, node.icon)
             iconView.setImageBitmap(bitmap)
 
-            if (node.status == "UNLOCKED") {
-                lockIcon.visibility = View.GONE
-                iconView.colorFilter = null
-                itemView.setOnClickListener {
-                    onNodeSelected(node)
+            when (galleryGraphManager.getNodeStatus(node.id)) {
+                NodeStatus.LOCKED -> {
+                    lockIcon.visibility = View.VISIBLE
+                    val matrix = ColorMatrix()
+                    matrix.setSaturation(0f) // Grayscale
+                    iconView.colorFilter = ColorMatrixColorFilter(matrix)
+                    itemView.setOnClickListener(null)
+                    itemView.setBackgroundColor(Color.TRANSPARENT)
                 }
-            } else {
-                lockIcon.visibility = View.VISIBLE
-                val matrix = ColorMatrix()
-                matrix.setSaturation(0f) // Grayscale
-                iconView.colorFilter = ColorMatrixColorFilter(matrix)
-                itemView.setOnClickListener(null)
+                NodeStatus.UNLOCKED, NodeStatus.IN_PROGRESS -> {
+                    lockIcon.visibility = View.GONE
+                    iconView.colorFilter = null
+                    itemView.setOnClickListener { onNodeSelected(node) }
+                    itemView.setBackgroundColor(Color.TRANSPARENT)
+                }
+                NodeStatus.COMPLETED -> {
+                    lockIcon.visibility = View.GONE
+                    iconView.colorFilter = null
+                    itemView.setOnClickListener { onNodeSelected(node) }
+                    itemView.setBackgroundColor(Color.parseColor("#FFD700")) // Gold
+                }
             }
         }
     }

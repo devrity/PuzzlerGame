@@ -15,7 +15,6 @@ data class GalleryNode(
     val icon: String,
     val puzzleFolder: String,
     val totalPuzzles: Int,
-    val status: String,
     val unlockType: String,
     val requiredCompletions: Int,
     @SerializedName("incomingEdges")
@@ -36,5 +35,5 @@ data class GalleryNodeStatus(
     val nodeId: String,
     val completionCount: Int,
     val isUnlocked: Boolean,
-    val nodeStatus: String
+    val nodeStatus: NodeStatus
 )

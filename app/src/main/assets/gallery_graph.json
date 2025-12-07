@@ -7,14 +7,10 @@
       "icon": "puzzles/Astralpacaino.jpg",
       "puzzleFolder": "puzzles/Astralpacaino.jpg",
       "totalPuzzles": 1,
-      "status": "UNLOCKED",
       "unlockType": "FREE",
       "requiredCompletions": 0,
       "incomingEdges": [],
-      "outgoingEdges": [
-        "Bambina Claudina.jpg",
-        "Pingu Plutino.jpg"
-      ],
+      "outgoingEdges": ["Bambina Claudina.jpg"],
       "puzzleImagesRef": []
     },
     "Bambina Claudina.jpg": {
@@ -22,11 +18,10 @@
       "icon": "puzzles/Bambina Claudina.jpg",
       "puzzleFolder": "puzzles/Bambina Claudina.jpg",
       "totalPuzzles": 1,
-      "status": "LOCKED",
       "unlockType": "FREE",
       "requiredCompletions": 1,
       "incomingEdges": ["Astralpacaino.jpg"],
-      "outgoingEdges": [],
+      "outgoingEdges": ["Pingu Plutino.jpg"],
       "puzzleImagesRef": []
     },
     "Pingu Plutino.jpg": {
@@ -34,10 +29,9 @@
       "icon": "puzzles/Pingu Plutino.jpg",
       "puzzleFolder": "puzzles/Pingu Plutino.jpg",
       "totalPuzzles": 1,
-      "status": "LOCKED",
       "unlockType": "FREE",
       "requiredCompletions": 1,
-      "incomingEdges": ["Astralpacaino.jpg"],
+      "incomingEdges": ["Bambina Claudina.jpg"],
       "outgoingEdges": [],
       "puzzleImagesRef": []
     }
