@@ -10,6 +10,7 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.graphics.createBitmap
 import com.devrity.brainnotpuzzler.manager.HapticManager
 import com.devrity.brainnotpuzzler.manager.ImageManager
 import com.devrity.brainnotpuzzler.manager.SoundManager
@@ -55,8 +56,20 @@ class MainActivity : AppCompatActivity() {
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        // Update ActionBar visibility when orientation changes
+        
+        // Reload the layout and re-initialize views while preserving state
+        setContentView(R.layout.activity_main)
         updateActionBarVisibility()
+        initViews()
+        setupListeners()
+
+        // Restore the state of the puzzle
+        puzzleBoard?.let {
+            gameView.setPuzzleBoard(it)
+        }
+        currentImage?.let {
+            thumbnailPreview.setImageBitmap(it)
+        }
     }
 
     /**
@@ -225,9 +238,9 @@ class MainActivity : AppCompatActivity() {
     /**
      * Create a test image (temporary fallback)
      */
-    private fun createTestImage(): Bitmap? {
+    private fun createTestImage(): Bitmap {
         // Placeholder - will be replaced with actual image loading
-        return Bitmap.createBitmap(300, 300, Bitmap.Config.ARGB_8888)
+        return createBitmap(300, 300, Bitmap.Config.ARGB_8888)
     }
 
     override fun onDestroy() {
