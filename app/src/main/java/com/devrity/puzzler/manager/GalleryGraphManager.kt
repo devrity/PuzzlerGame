@@ -1,8 +1,6 @@
 package com.devrity.puzzler.manager
 
 import android.content.Context
-import com.devrity.puzzler.model.GalleryGraph
-import com.devrity.puzzler.model.GalleryNode
 import com.google.gson.Gson
 import java.io.InputStreamReader
 

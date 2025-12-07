@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var thumbnailPreview: ImageView
     private lateinit var replayButton: ImageButton
     private lateinit var settingsButton: ImageButton
-    private lateinit var nextButton: ImageButton
+    // private lateinit var nextButton: ImageButton
     private lateinit var premiumButton: ImageButton
 
     private lateinit var soundManager: SoundManager
@@ -78,7 +78,7 @@ class MainActivity : AppCompatActivity() {
         thumbnailPreview = findViewById(R.id.thumbnail_preview)
         replayButton = findViewById(R.id.replay_button)
         settingsButton = findViewById(R.id.settings_button)
-        nextButton = findViewById(R.id.next_button)
+        // nextButton = findViewById(R.id.next_button)
         premiumButton = findViewById(R.id.premium_button)
     }
 
@@ -108,9 +108,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Next button - load random new puzzle
-        nextButton.setOnClickListener {
-            startNewGame()
-        }
+        // nextButton.setOnClickListener {
+        //     startNewGame()
+        // }
 
         // Premium button - placeholder (no backend yet)
         premiumButton.setOnClickListener {
