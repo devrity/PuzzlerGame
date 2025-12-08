@@ -31,7 +31,8 @@
             android:background="#A5D6A7"
             android:padding="4dp"
             android:scaleType="centerCrop"
-            android:contentDescription="@string/thumbnail_preview" />
+            android:contentDescription="@string/thumbnail_preview"
+            android:saveEnabled="false" />
 
         <!-- Button Row (single row, 4 buttons) -->
         <LinearLayout
@@ -92,6 +93,7 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:background="#C8E6C9"
+        android:saveEnabled="false"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintStart_toEndOf="@+id/left_panel"
         app:layout_constraintEnd_toEndOf="parent"

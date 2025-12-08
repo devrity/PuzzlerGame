@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
@@ -133,6 +134,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startNewGame(puzzleId: String?) {
+        // This is the crucial fix: Always clean up the victory state before starting a new game.
+        konfettiView.visibility = View.GONE
+        konfettiView.setOnClickListener(null)
+        handler.removeCallbacksAndMessages(null)
+
         currentPuzzleId = puzzleId
 
         val puzzleNode = galleryGraphManager.getGalleryNode(puzzleId ?: "")
@@ -186,6 +192,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showVictoryConfetti() {
+        konfettiView.visibility = View.VISIBLE
         konfettiView.start(
             Party(
                 speed = 0f,
@@ -193,8 +200,7 @@ class MainActivity : AppCompatActivity() {
                 damping = 0.9f,
                 spread = 360,
                 colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
-                emitter = Emitter(duration = 100, TimeUnit.MILLISECONDS).max(100),
-                position = nl.dionsegijn.konfetti.core.Position.Relative(0.5, 0.3)
+                emitter = Emitter(duration = 200, TimeUnit.MILLISECONDS).max(200)
             )
         )
     }

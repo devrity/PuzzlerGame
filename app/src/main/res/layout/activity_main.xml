@@ -14,6 +14,7 @@
         android:layout_height="0dp"
         android:layout_margin="6dp"
         android:background="#C8E6C9"
+        android:saveEnabled="false"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintBottom_toTopOf="@+id/thumbnail_preview"
         app:layout_constraintEnd_toEndOf="parent"
@@ -30,6 +31,7 @@
         android:padding="4dp"
         android:scaleType="centerCrop"
         android:contentDescription="@string/thumbnail_preview"
+        android:saveEnabled="false"
         app:layout_constraintBottom_toTopOf="@+id/button_row"
         app:layout_constraintEnd_toEndOf="parent" />
 
