@@ -8,13 +8,42 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId "com.devrity.brainnotpuzzler"
+        // The base applicationId is now overridden by flavors
         minSdk 26
         targetSdk 36
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    // Define the flavor dimension
+    flavorDimensions = ["version"]
+
+    productFlavors {
+        puzzlePals {
+            dimension "version"
+            applicationId "com.devrity.brainnotpuzzler.pals"
+            versionNameSuffix "-pals"
+            resValue "string", "app_name", "Puzzle Pals"
+            resValue "string", "gallery_graph_json", "gallery_graph_pals.json"
+        }
+        
+        brainNot {
+            dimension "version"
+            applicationId "com.devrity.brainnotpuzzler.not"
+            versionNameSuffix "-not"
+            resValue "string", "app_name", "Brain Not Puzzler"
+            resValue "string", "gallery_graph_json", "gallery_graph_not.json"
+        }
+        
+        puzzlePro {
+            dimension "version"
+            applicationId "com.devrity.brainnotpuzzler.pro"
+            versionNameSuffix "-pro"
+            resValue "string", "app_name", "Puzzle Pro"
+            resValue "string", "gallery_graph_json", "gallery_graph_pro.json"
+        }
     }
 
     buildTypes {

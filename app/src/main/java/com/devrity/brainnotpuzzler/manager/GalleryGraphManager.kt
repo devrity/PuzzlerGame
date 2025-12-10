@@ -2,6 +2,8 @@ package com.devrity.brainnotpuzzler.manager
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
+import com.devrity.brainnotpuzzler.R
 import com.devrity.brainnotpuzzler.model.GalleryGraph
 import com.devrity.brainnotpuzzler.model.GalleryNode
 import com.devrity.brainnotpuzzler.model.NodeStatus
@@ -22,7 +24,8 @@ class GalleryGraphManager(private val context: Context) {
 
     private fun loadGalleryGraph() {
         try {
-            val inputStream = context.assets.open("gallery_graph.json")
+            val jsonFileName = context.getString(R.string.gallery_graph_json)
+            val inputStream = context.assets.open(jsonFileName)
             val reader = InputStreamReader(inputStream)
             galleryGraph = Gson().fromJson(reader, GalleryGraph::class.java)
             reader.close()
@@ -53,7 +56,9 @@ class GalleryGraphManager(private val context: Context) {
     }
 
     fun setNodeStatus(nodeId: String, status: NodeStatus) {
-        prefs.edit().putString("status_$nodeId", status.name).apply()
+        prefs.edit {
+            putString("status_$nodeId", status.name)
+        }
     }
 
     fun unlockOutgoingNodesFor(nodeId: String) {

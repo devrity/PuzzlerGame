@@ -1,0 +1,17 @@
+{
+  "version": "1.0",
+  "startNodeId": "pals1.jpg",
+  "nodes": {
+    "pals1.jpg": {
+      "id": "pals1.jpg",
+      "icon": "puzzles/thumbnails/pals1.jpg",
+      "puzzleFolder": "puzzles/pals1.jpg",
+      "totalPuzzles": 1,
+      "unlockType": "FREE",
+      "requiredCompletions": 0,
+      "incomingEdges": [],
+      "outgoingEdges": [],
+      "puzzleImagesRef": []
+    }
+  }
+}
