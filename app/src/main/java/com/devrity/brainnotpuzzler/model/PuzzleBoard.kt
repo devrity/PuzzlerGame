@@ -107,4 +107,22 @@ class PuzzleBoard {
         }
         return true
     }
+
+    fun getCurrentPieceOrder(): ArrayList<Int> {
+        return ArrayList(pieces.map { it?.id ?: -1 })
+    }
+
+    fun restoreBoardState(order: List<Int>) {
+        val currentPieces = this.pieces.associateBy { it?.id }
+        val newPieces: Array<PuzzlePiece?> = arrayOfNulls(order.size)
+        for (i in order.indices) {
+            val pieceId = order[i]
+            val piece = currentPieces[pieceId]
+            newPieces[i] = piece?.copy(currentPosition = i)
+            if (piece?.isEmptySpace == true) {
+                emptyPosition = i
+            }
+        }
+        this.pieces = newPieces
+    }
 }

@@ -48,13 +48,14 @@ class MainActivity : AppCompatActivity() {
     private val galleryLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if (it.resultCode == Activity.RESULT_OK) {
             it.data?.getStringExtra("selected_puzzle_id")?.let {
-                startNewGame(it)
+                startNewGame(it, null)
             }
         }
     }
 
     companion object {
         private const val KEY_CURRENT_PUZZLE_ID = "KEY_CURRENT_PUZZLE_ID"
+        private const val KEY_PUZZLE_ORDER = "KEY_PUZZLE_ORDER"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,15 +73,19 @@ class MainActivity : AppCompatActivity() {
 
         if (savedInstanceState != null) {
             val savedPuzzleId = savedInstanceState.getString(KEY_CURRENT_PUZZLE_ID)
-            startNewGame(savedPuzzleId)
+            val savedOrder = savedInstanceState.getIntegerArrayList(KEY_PUZZLE_ORDER)
+            startNewGame(savedPuzzleId, savedOrder)
         } else {
-            galleryGraphManager.getStartGallery()?.let { startNewGame(it.id) }
+            galleryGraphManager.getStartGallery()?.let { startNewGame(it.id, null) }
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(KEY_CURRENT_PUZZLE_ID, currentPuzzleId)
+        puzzleBoard?.let {
+            outState.putIntegerArrayList(KEY_PUZZLE_ORDER, it.getCurrentPieceOrder())
+        }
     }
 
     private fun updateActionBarVisibility() {
@@ -113,7 +118,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         replayButton.setOnClickListener {
-            currentPuzzleId?.let { startNewGame(it) }
+            currentPuzzleId?.let { startNewGame(it, null) }
         }
 
         settingsButton.setOnClickListener {
@@ -133,7 +138,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun startNewGame(puzzleId: String?) {
+    private fun startNewGame(puzzleId: String?, boardOrder: ArrayList<Int>?) {
         // This is the crucial fix: Always clean up the victory state before starting a new game.
         konfettiView.visibility = View.GONE
         konfettiView.setOnClickListener(null)
@@ -161,7 +166,12 @@ class MainActivity : AppCompatActivity() {
         puzzleBoard = PuzzleBoard()
         val pieceBitmaps = ImageManager.sliceImage(currentImage!!)
         puzzleBoard?.initBoard(pieceBitmaps)
-        puzzleBoard?.shuffle()
+
+        if (boardOrder != null) {
+            puzzleBoard?.restoreBoardState(boardOrder)
+        } else {
+            puzzleBoard?.shuffle()
+        }
 
         if (puzzleBoard != null) {
             gameView.setPuzzleBoard(puzzleBoard!!, currentImage!!)
