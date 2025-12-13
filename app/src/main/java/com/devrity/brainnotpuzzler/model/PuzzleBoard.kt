@@ -35,6 +35,28 @@ class PuzzleBoard {
         )
     }
 
+    fun setBoardState(order: List<String>) {
+        if (order.size != totalPieces) {
+            throw IllegalArgumentException("Initial state must have $totalPieces elements.")
+        }
+        val originalPieces = this.pieces.associateBy { it?.correctPosition }
+        val newPieces: Array<PuzzlePiece?> = arrayOfNulls(totalPieces)
+
+        for (i in 0 until totalPieces) {
+            val pieceIdentifier = order[i]
+            if (pieceIdentifier == "-") {
+                 val emptyPiece = originalPieces[totalPieces - 1]
+                 newPieces[i] = emptyPiece?.copy(currentPosition = i)
+                 emptyPosition = i
+            } else {
+                val correctPositionId = pieceIdentifier.toInt()
+                val pieceToMove = originalPieces[correctPositionId]
+                newPieces[i] = pieceToMove?.copy(currentPosition = i)
+            }
+        }
+        this.pieces = newPieces
+    }
+
     fun getPieces(): Array<PuzzlePiece?> = pieces.copyOf()
 
     fun getEmptyPosition(): Int = emptyPosition
@@ -109,7 +131,7 @@ class PuzzleBoard {
     }
 
     fun getCurrentPieceOrder(): ArrayList<Int> {
-        return ArrayList(pieces.map { it?.id ?: -1 })
+        return ArrayList(pieces.map { it?.id ?: (totalPieces -1) })
     }
 
     fun restoreBoardState(order: List<Int>) {

@@ -167,10 +167,10 @@ class MainActivity : AppCompatActivity() {
         val pieceBitmaps = ImageManager.sliceImage(currentImage!!)
         puzzleBoard?.initBoard(pieceBitmaps)
 
-        if (boardOrder != null) {
-            puzzleBoard?.restoreBoardState(boardOrder)
-        } else {
-            puzzleBoard?.shuffle()
+        when {
+            boardOrder != null -> puzzleBoard?.restoreBoardState(boardOrder)
+            puzzleNode?.initState?.isNotEmpty() == true -> puzzleBoard?.setBoardState(puzzleNode.initState)
+            else -> puzzleBoard?.shuffle()
         }
 
         if (puzzleBoard != null) {

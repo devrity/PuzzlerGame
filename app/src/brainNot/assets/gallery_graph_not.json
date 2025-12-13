@@ -9,6 +9,7 @@
       "totalPuzzles": 1,
       "unlockType": "FREE",
       "requiredCompletions": 0,
+      "initState": ["0", "1", "2", "3", "4", "5", "6", "-", "7"],
       "incomingEdges": [],
       "outgoingEdges": ["Bambina Claudina.jpg"],
       "puzzleImagesRef": []

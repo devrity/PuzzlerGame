@@ -17,6 +17,7 @@ data class GalleryNode(
     val totalPuzzles: Int,
     val unlockType: String,
     val requiredCompletions: Int,
+    val initState: List<String>?,
     @SerializedName("incomingEdges")
     val incomingEdges: List<String>,
     @SerializedName("outgoingEdges")
