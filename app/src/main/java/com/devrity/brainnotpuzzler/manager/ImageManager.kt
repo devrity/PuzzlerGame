@@ -3,7 +3,6 @@ package com.devrity.brainnotpuzzler.manager
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import com.devrity.brainnotpuzzler.util.Constants
 import java.io.IOException
 
 object ImageManager {
@@ -35,8 +34,7 @@ object ImageManager {
         return Bitmap.createBitmap(bitmap, xOffset, yOffset, size, size)
     }
 
-    fun sliceImage(bitmap: Bitmap): List<Bitmap> {
-        val gridSize = Constants.GRID_SIZE
+    fun sliceImage(bitmap: Bitmap, gridSize: Int): List<Bitmap> {
         val pieceWidth = bitmap.width / gridSize
         val pieceHeight = bitmap.height / gridSize
         val pieces = mutableListOf<Bitmap>()

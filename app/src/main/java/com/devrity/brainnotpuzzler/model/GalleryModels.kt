@@ -14,6 +14,7 @@ data class GalleryNode(
     val id: String,
     val icon: String,
     val puzzleFolder: String,
+    val puzzleSize: Int,
     val totalPuzzles: Int,
     val unlockType: String,
     val requiredCompletions: Int,

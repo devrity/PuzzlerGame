@@ -1,14 +1,16 @@
 package com.devrity.brainnotpuzzler.model
 
 import android.graphics.Bitmap
-import com.devrity.brainnotpuzzler.util.Constants
 import kotlin.math.abs
 
-class PuzzleBoard {
-    private val gridSize = Constants.GRID_SIZE
-    private var pieces: Array<PuzzlePiece?> = arrayOfNulls(gridSize * gridSize)
+class PuzzleBoard(private val gridSize: Int) {
+    private var pieces: Array<PuzzlePiece?>
     private var emptyPosition: Int = -1
     private val totalPieces = gridSize * gridSize
+
+    init {
+        pieces = arrayOfNulls(totalPieces)
+    }
 
     fun initBoard(pieceBitmaps: List<Bitmap>, emptyPieceId: Int) {
         if (pieceBitmaps.size != totalPieces) {
@@ -24,10 +26,17 @@ class PuzzleBoard {
                 bitmap = if (isThisTheEmptyPiece) null else pieceBitmaps[i],
                 isEmptySpace = isThisTheEmptyPiece
             )
+            if (isThisTheEmptyPiece) {
+                emptyPosition = i // Set initial empty position
+            }
         }
     }
 
     fun setBoardState(order: List<String>) {
+        if (order.size != totalPieces) {
+            throw IllegalArgumentException("Initial state must have $totalPieces elements.")
+        }
+        
         val originalPieces = this.pieces.associateBy { it?.correctPosition }
         val newPieces: Array<PuzzlePiece?> = arrayOfNulls(totalPieces)
 
@@ -53,13 +62,37 @@ class PuzzleBoard {
     }
 
     fun getPieces(): Array<PuzzlePiece?> = pieces.copyOf()
+    
+    fun getGridSize(): Int = gridSize
 
-    fun getEmptyPosition(): Int = emptyPosition
+    private fun isAdjacent(pos1: Int, pos2: Int): Boolean {
+        val row1 = pos1 / gridSize
+        val col1 = pos1 % gridSize
+        val row2 = pos2 / gridSize
+        val col2 = pos2 % gridSize
+
+        if (row1 == row2 && abs(col1 - col2) == 1) return true
+        if (col1 == col2 && abs(row1 - row2) == 1) return true
+
+        return false
+    }
 
     fun canMove(position: Int): Boolean {
         if (position < 0 || position >= totalPieces) return false
         if (position == emptyPosition) return false
         return isAdjacent(position, emptyPosition)
+    }
+    
+    private fun getValidMoves(): List<Int> {
+        val validMoves = mutableListOf<Int>()
+        val (emptyRow, emptyCol) = Pair(emptyPosition / gridSize, emptyPosition % gridSize)
+
+        if (emptyRow > 0) validMoves.add(emptyPosition - gridSize) // Up
+        if (emptyRow < gridSize - 1) validMoves.add(emptyPosition + gridSize) // Down
+        if (emptyCol > 0) validMoves.add(emptyPosition - 1) // Left
+        if (emptyCol < gridSize - 1) validMoves.add(emptyPosition + 1) // Right
+
+        return validMoves
     }
 
     fun movePiece(position: Int): Boolean {
@@ -80,40 +113,11 @@ class PuzzleBoard {
 
         return true
     }
-
-    private fun isAdjacent(pos1: Int, pos2: Int): Boolean {
-        val row1 = pos1 / gridSize
-        val col1 = pos1 % gridSize
-        val row2 = pos2 / gridSize
-        val col2 = pos2 % gridSize
-
-        if (row1 == row2 && abs(col1 - col2) == 1) return true
-        if (col1 == col2 && abs(row1 - row2) == 1) return true
-
-        return false
-    }
-
-    fun getValidMoves(): List<Int> {
-        val validMoves = mutableListOf<Int>()
-        for (i in pieces.indices) {
-            if (canMove(i)) {
-                validMoves.add(i)
-            }
-        }
-        return validMoves
-    }
-
-    fun shuffle(emptyPieceId: Int) {
-        // Find the designated empty piece and prepare it for shuffling.
-        val emptyPiece = pieces.find { it?.correctPosition == emptyPieceId }
-        if (emptyPiece != null) {
-            val index = pieces.indexOf(emptyPiece)
-            pieces[index] = emptyPiece.copy(isEmptySpace = true, bitmap = null)
-            emptyPosition = emptyPiece.currentPosition
-        }
-
+    
+    fun shuffle() {
         var lastMove = -1
-        repeat(100) {
+        // Scale shuffles based on grid size for better randomness
+        repeat(20 * totalPieces) {
             val validMoves = getValidMoves().filter { it != lastMove }
             if (validMoves.isNotEmpty()) {
                 val randomMove = validMoves.random()
@@ -133,7 +137,8 @@ class PuzzleBoard {
     }
 
     fun getCurrentPieceOrder(): ArrayList<Int> {
-        return ArrayList(pieces.map { it?.id ?: -1 })
+        // Store -1 for the empty piece to correctly restore it.
+        return ArrayList(pieces.map { if(it?.isEmptySpace == true) -1 else it?.id ?: -1 })
     }
 
     fun restoreBoardState(order: List<Int>) {
@@ -141,10 +146,17 @@ class PuzzleBoard {
         val newPieces: Array<PuzzlePiece?> = arrayOfNulls(order.size)
         for (i in order.indices) {
             val pieceId = order[i]
-            val piece = currentPieces[pieceId]
-            newPieces[i] = piece?.copy(currentPosition = i)
-            if (piece?.isEmptySpace == true) {
-                emptyPosition = i
+            val pieceToMove = if (pieceId == -1) {
+                pieces.find { it?.isEmptySpace == true }
+            } else {
+                currentPieces[pieceId]
+            }
+            
+            if (pieceToMove != null) {
+                newPieces[i] = pieceToMove.copy(currentPosition = i)
+                if (pieceToMove.isEmptySpace) {
+                    emptyPosition = i
+                }
             }
         }
         this.pieces = newPieces

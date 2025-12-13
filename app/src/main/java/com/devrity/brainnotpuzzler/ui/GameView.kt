@@ -12,8 +12,6 @@ import android.view.MotionEvent
 import android.view.View
 import com.devrity.brainnotpuzzler.model.PuzzleBoard
 import com.devrity.brainnotpuzzler.model.PuzzlePiece
-import com.devrity.brainnotpuzzler.util.Constants
-import kotlin.math.abs
 
 class GameView @JvmOverloads constructor(
     context: Context,
@@ -25,7 +23,7 @@ class GameView @JvmOverloads constructor(
     private var pieces: Array<PuzzlePiece?> = emptyArray()
     private var fullImage: Bitmap? = null
     private var isVictoryState: Boolean = false
-    private var gridSize: Int = Constants.GRID_SIZE
+    private var gridSize: Int = 3 // Default size, will be updated by PuzzleBoard
     private var pieceSize: Float = 0f
     private var totalSize: Float = 0f
     private var offsetX: Float = 0f
@@ -40,13 +38,13 @@ class GameView @JvmOverloads constructor(
         style = Paint.Style.FILL
     }
     private val gridPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Constants.GRID_LINE_COLOR
-        strokeWidth = Constants.GRID_LINE_WIDTH
+        color = 0xFF000000.toInt() // Black
+        strokeWidth = 5f
         style = Paint.Style.STROKE
     }
     private val outerBorderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Constants.GRID_LINE_COLOR
-        strokeWidth = Constants.GRID_OUTER_BORDER_WIDTH
+        color = 0xFF000000.toInt() // Black
+        strokeWidth = 10f
         style = Paint.Style.STROKE
     }
 
@@ -54,13 +52,13 @@ class GameView @JvmOverloads constructor(
 
     private var touchStartX: Float = 0f
     private var touchStartY: Float = 0f
-    private val swipeThreshold = 50f
 
     var onPieceMovedListener: ((isSolved: Boolean) -> Unit)? = null
     var onPieceMoved: (() -> Unit)? = null
 
     fun setPuzzleBoard(board: PuzzleBoard, image: Bitmap) {
         this.puzzleBoard = board
+        this.gridSize = board.getGridSize()
         this.fullImage = image
         this.pieces = board.getPieces()
         this.isVictoryState = false
@@ -124,10 +122,13 @@ class GameView @JvmOverloads constructor(
 
                 if (it.isEmptySpace) {
                     canvas.drawRect(left, top, right, bottom, emptySpacePaint)
-                } else if (it.bitmap != null) {
-                    val inset = Constants.GRID_LINE_WIDTH / 2f
-                    pieceDrawingRect.set(left + inset, top + inset, right - inset, bottom - inset)
-                    canvas.drawBitmap(it.bitmap, null, pieceDrawingRect, piecePaint)
+                } else {
+                    val bitmap = it.bitmap
+                    if (bitmap != null) {
+                        val inset = gridPaint.strokeWidth / 2f
+                        pieceDrawingRect.set(left + inset, top + inset, right - inset, bottom - inset)
+                        canvas.drawBitmap(bitmap, null, pieceDrawingRect, piecePaint)
+                    }
                 }
             }
         }
@@ -157,21 +158,9 @@ class GameView @JvmOverloads constructor(
                 return true
             }
             MotionEvent.ACTION_UP -> {
-                val deltaX = event.x - touchStartX
-                val deltaY = event.y - touchStartY
-                val distance = Math.sqrt((deltaX * deltaX + deltaY * deltaY).toDouble()).toFloat()
-
-                if (distance < swipeThreshold) {
-                    // Treat as tap
-                    handleTap(touchStartX, touchStartY)
-                } else {
-                    // Treat as swipe
-                    handleSwipe(touchStartX, touchStartY, deltaX, deltaY)
-                }
-                return true
+                 return performClick()
             }
         }
-
         return super.onTouchEvent(event)
     }
 
@@ -186,39 +175,6 @@ class GameView @JvmOverloads constructor(
         val position = getTouchedPosition(x, y)
         if (position != -1) {
             movePiece(position)
-        }
-    }
-
-    private fun handleSwipe(startX: Float, startY: Float, deltaX: Float, deltaY: Float) {
-        val position = getTouchedPosition(startX, startY)
-        if (position == -1) return
-
-        val absDeltaX = abs(deltaX)
-        val absDeltaY = abs(deltaY)
-
-        val board = puzzleBoard ?: return
-        val emptyPos = board.getEmptyPosition()
-        val row = position / gridSize
-        val col = position % gridSize
-        val emptyRow = emptyPos / gridSize
-        val emptyCol = emptyPos % gridSize
-
-        if (absDeltaX > absDeltaY) { // Horizontal swipe
-            if (deltaX > 0 && emptyRow == row && emptyCol == col + 1) {
-                // Swipe Right -> Empty space must be to the right
-                movePiece(position)
-            } else if (deltaX < 0 && emptyRow == row && emptyCol == col - 1) {
-                // Swipe Left -> Empty space must be to the left
-                movePiece(position)
-            }
-        } else { // Vertical swipe
-            if (deltaY > 0 && emptyCol == col && emptyRow == row + 1) {
-                // Swipe Down -> Empty space must be below
-                movePiece(position)
-            } else if (deltaY < 0 && emptyCol == col && emptyRow == row - 1) {
-                // Swipe Up -> Empty space must be above
-                movePiece(position)
-            }
         }
     }
 

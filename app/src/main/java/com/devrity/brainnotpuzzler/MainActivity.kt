@@ -19,7 +19,6 @@ import com.devrity.brainnotpuzzler.model.NodeStatus
 import com.devrity.brainnotpuzzler.manager.SoundManager
 import com.devrity.brainnotpuzzler.model.PuzzleBoard
 import com.devrity.brainnotpuzzler.ui.GameView
-import com.devrity.brainnotpuzzler.util.Constants
 import nl.dionsegijn.konfetti.core.Party
 import nl.dionsegijn.konfetti.core.emitter.Emitter
 import nl.dionsegijn.konfetti.xml.KonfettiView
@@ -147,6 +146,7 @@ class MainActivity : AppCompatActivity() {
 
         val puzzleNode = galleryGraphManager.getGalleryNode(puzzleId ?: "")
         val imagePath = puzzleNode?.puzzleFolder
+        val puzzleSize = puzzleNode?.puzzleSize ?: 3 // Default to 3x3 if not specified
 
         currentImage = if (imagePath == null) {
             ImageManager.getDefaultImage(this)
@@ -162,18 +162,19 @@ class MainActivity : AppCompatActivity() {
         currentImage = ImageManager.ensureSquare(currentImage!!)
         thumbnailPreview.setImageBitmap(currentImage)
 
-        puzzleBoard = PuzzleBoard()
-        val pieceBitmaps = ImageManager.sliceImage(currentImage!!)
+        puzzleBoard = PuzzleBoard(puzzleSize)
+        val pieceBitmaps = ImageManager.sliceImage(currentImage!!, puzzleSize)
         
+        val totalPieces = puzzleSize * puzzleSize
         val emptyPieceId = if (puzzleNode?.initState?.isNotEmpty() == true) {
-            val allPieceIds = (0 until Constants.GRID_SIZE * Constants.GRID_SIZE).toMutableSet()
+            val allPieceIds = (0 until totalPieces).toMutableSet()
             val visiblePieceIds = puzzleNode.initState
                 .filter { it != "E" }
                 .map { it.toInt() }
             allPieceIds.removeAll(visiblePieceIds)
-            allPieceIds.firstOrNull() ?: (Constants.GRID_SIZE * Constants.GRID_SIZE - 1)
+            allPieceIds.firstOrNull() ?: (totalPieces - 1)
         } else {
-            puzzleNode?.emptyPieceId ?: (Constants.GRID_SIZE * Constants.GRID_SIZE - 1)
+            puzzleNode?.emptyPieceId ?: (totalPieces - 1)
         }
 
         puzzleBoard?.initBoard(pieceBitmaps, emptyPieceId)
@@ -181,7 +182,7 @@ class MainActivity : AppCompatActivity() {
         when {
             boardOrder != null -> puzzleBoard?.restoreBoardState(boardOrder)
             puzzleNode?.initState?.isNotEmpty() == true -> puzzleBoard?.setBoardState(puzzleNode.initState)
-            else -> puzzleBoard?.shuffle(emptyPieceId)
+            else -> puzzleBoard?.shuffle()
         }
 
         if (puzzleBoard != null) {
