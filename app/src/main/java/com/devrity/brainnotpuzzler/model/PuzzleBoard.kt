@@ -10,48 +10,43 @@ class PuzzleBoard {
     private var emptyPosition: Int = -1
     private val totalPieces = gridSize * gridSize
 
-    fun initBoard(pieceBitmaps: List<Bitmap>) {
-        if (pieceBitmaps.size != totalPieces - 1) {
-            throw IllegalArgumentException("Expected ${totalPieces - 1} pieces, got ${pieceBitmaps.size}")
+    fun initBoard(pieceBitmaps: List<Bitmap>, emptyPieceId: Int) {
+        if (pieceBitmaps.size != totalPieces) {
+            throw IllegalArgumentException("Expected $totalPieces pieces, got ${pieceBitmaps.size}")
         }
 
-        for (i in 0 until totalPieces - 1) {
+        for (i in 0 until totalPieces) {
+            val isThisTheEmptyPiece = (i == emptyPieceId)
             pieces[i] = PuzzlePiece(
                 id = i,
                 correctPosition = i,
                 currentPosition = i,
-                bitmap = pieceBitmaps[i],
-                isEmptySpace = false
+                bitmap = if (isThisTheEmptyPiece) null else pieceBitmaps[i],
+                isEmptySpace = isThisTheEmptyPiece
             )
         }
-
-        emptyPosition = totalPieces - 1
-        pieces[emptyPosition] = PuzzlePiece(
-            id = totalPieces - 1, // Represents the empty space
-            correctPosition = totalPieces - 1,
-            currentPosition = emptyPosition,
-            bitmap = null,
-            isEmptySpace = true
-        )
     }
 
     fun setBoardState(order: List<String>) {
-        if (order.size != totalPieces) {
-            throw IllegalArgumentException("Initial state must have $totalPieces elements.")
-        }
         val originalPieces = this.pieces.associateBy { it?.correctPosition }
         val newPieces: Array<PuzzlePiece?> = arrayOfNulls(totalPieces)
 
         for (i in 0 until totalPieces) {
             val pieceIdentifier = order[i]
+            val pieceToMove: PuzzlePiece?
+
             if (pieceIdentifier == "E") {
-                 val emptyPiece = originalPieces[totalPieces - 1]
-                 newPieces[i] = emptyPiece?.copy(currentPosition = i)
-                 emptyPosition = i
+                pieceToMove = originalPieces.values.first { it?.isEmptySpace == true }
             } else {
                 val correctPositionId = pieceIdentifier.toInt()
-                val pieceToMove = originalPieces[correctPositionId]
-                newPieces[i] = pieceToMove?.copy(currentPosition = i)
+                pieceToMove = originalPieces[correctPositionId]
+            }
+
+            if (pieceToMove != null) {
+                newPieces[i] = pieceToMove.copy(currentPosition = i)
+                if (pieceToMove.isEmptySpace) {
+                    emptyPosition = i
+                }
             }
         }
         this.pieces = newPieces
@@ -108,9 +103,17 @@ class PuzzleBoard {
         return validMoves
     }
 
-    fun shuffle(moves: Int = 100) {
+    fun shuffle(emptyPieceId: Int) {
+        // Find the designated empty piece and prepare it for shuffling.
+        val emptyPiece = pieces.find { it?.correctPosition == emptyPieceId }
+        if (emptyPiece != null) {
+            val index = pieces.indexOf(emptyPiece)
+            pieces[index] = emptyPiece.copy(isEmptySpace = true, bitmap = null)
+            emptyPosition = emptyPiece.currentPosition
+        }
+
         var lastMove = -1
-        repeat(moves) {
+        repeat(100) {
             val validMoves = getValidMoves().filter { it != lastMove }
             if (validMoves.isNotEmpty()) {
                 val randomMove = validMoves.random()
@@ -121,17 +124,16 @@ class PuzzleBoard {
     }
 
     fun isSolved(): Boolean {
-        if (emptyPosition != totalPieces - 1) return false
-
-        for (i in 0 until totalPieces - 1) {
-            val piece = pieces[i] ?: return false
-            if (!piece.isInCorrectPosition()) return false
+        for (piece in pieces) {
+            if (piece?.isInCorrectPosition() == false) {
+                return false
+            }
         }
         return true
     }
 
     fun getCurrentPieceOrder(): ArrayList<Int> {
-        return ArrayList(pieces.map { it?.id ?: (totalPieces -1) })
+        return ArrayList(pieces.map { it?.id ?: -1 })
     }
 
     fun restoreBoardState(order: List<Int>) {

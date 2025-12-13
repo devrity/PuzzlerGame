@@ -18,6 +18,7 @@ data class GalleryNode(
     val unlockType: String,
     val requiredCompletions: Int,
     val initState: List<String>?,
+    val emptyPieceId: Int?,
     @SerializedName("incomingEdges")
     val incomingEdges: List<String>,
     @SerializedName("outgoingEdges")

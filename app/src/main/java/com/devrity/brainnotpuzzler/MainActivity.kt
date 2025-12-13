@@ -1,6 +1,5 @@
 package com.devrity.brainnotpuzzler
 
-import android.app.Activity
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Bitmap
@@ -20,6 +19,7 @@ import com.devrity.brainnotpuzzler.model.NodeStatus
 import com.devrity.brainnotpuzzler.manager.SoundManager
 import com.devrity.brainnotpuzzler.model.PuzzleBoard
 import com.devrity.brainnotpuzzler.ui.GameView
+import com.devrity.brainnotpuzzler.util.Constants
 import nl.dionsegijn.konfetti.core.Party
 import nl.dionsegijn.konfetti.core.emitter.Emitter
 import nl.dionsegijn.konfetti.xml.KonfettiView
@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
     private val handler = Handler(Looper.getMainLooper())
 
     private val galleryLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        if (it.resultCode == Activity.RESULT_OK) {
+        if (it.resultCode == RESULT_OK) {
             it.data?.getStringExtra("selected_puzzle_id")?.let {
                 startNewGame(it, null)
             }
@@ -139,7 +139,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startNewGame(puzzleId: String?, boardOrder: ArrayList<Int>?) {
-        // This is the crucial fix: Always clean up the victory state before starting a new game.
         konfettiView.visibility = View.GONE
         konfettiView.setOnClickListener(null)
         handler.removeCallbacksAndMessages(null)
@@ -165,12 +164,24 @@ class MainActivity : AppCompatActivity() {
 
         puzzleBoard = PuzzleBoard()
         val pieceBitmaps = ImageManager.sliceImage(currentImage!!)
-        puzzleBoard?.initBoard(pieceBitmaps)
+        
+        val emptyPieceId = if (puzzleNode?.initState?.isNotEmpty() == true) {
+            val allPieceIds = (0 until Constants.GRID_SIZE * Constants.GRID_SIZE).toMutableSet()
+            val visiblePieceIds = puzzleNode.initState
+                .filter { it != "E" }
+                .map { it.toInt() }
+            allPieceIds.removeAll(visiblePieceIds)
+            allPieceIds.firstOrNull() ?: (Constants.GRID_SIZE * Constants.GRID_SIZE - 1)
+        } else {
+            puzzleNode?.emptyPieceId ?: (Constants.GRID_SIZE * Constants.GRID_SIZE - 1)
+        }
+
+        puzzleBoard?.initBoard(pieceBitmaps, emptyPieceId)
 
         when {
             boardOrder != null -> puzzleBoard?.restoreBoardState(boardOrder)
             puzzleNode?.initState?.isNotEmpty() == true -> puzzleBoard?.setBoardState(puzzleNode.initState)
-            else -> puzzleBoard?.shuffle()
+            else -> puzzleBoard?.shuffle(emptyPieceId)
         }
 
         if (puzzleBoard != null) {

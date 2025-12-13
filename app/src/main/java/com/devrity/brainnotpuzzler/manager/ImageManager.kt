@@ -40,13 +40,9 @@ object ImageManager {
         val pieceWidth = bitmap.width / gridSize
         val pieceHeight = bitmap.height / gridSize
         val pieces = mutableListOf<Bitmap>()
-        val totalPieces = gridSize * gridSize
+
         for (row in 0 until gridSize) {
             for (col in 0 until gridSize) {
-                val position = row * gridSize + col
-                if (position == totalPieces - 1) {
-                    continue
-                }
                 val piece = Bitmap.createBitmap(
                     bitmap,
                     col * pieceWidth,
