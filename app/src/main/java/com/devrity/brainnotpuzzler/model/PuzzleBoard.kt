@@ -27,7 +27,7 @@ class PuzzleBoard {
 
         emptyPosition = totalPieces - 1
         pieces[emptyPosition] = PuzzlePiece(
-            id = totalPieces - 1,
+            id = totalPieces - 1, // Represents the empty space
             correctPosition = totalPieces - 1,
             currentPosition = emptyPosition,
             bitmap = null,
@@ -44,7 +44,7 @@ class PuzzleBoard {
 
         for (i in 0 until totalPieces) {
             val pieceIdentifier = order[i]
-            if (pieceIdentifier == "-") {
+            if (pieceIdentifier == "E") {
                  val emptyPiece = originalPieces[totalPieces - 1]
                  newPieces[i] = emptyPiece?.copy(currentPosition = i)
                  emptyPosition = i
