@@ -42,6 +42,7 @@ class MainActivity : AppCompatActivity() {
     private var currentImage: Bitmap? = null
     private var currentPuzzleId: String? = null
     private var lockIconBitmap: Bitmap? = null
+    private var isSolved: Boolean = false
 
     private val handler = Handler(Looper.getMainLooper())
 
@@ -56,6 +57,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val KEY_CURRENT_PUZZLE_ID = "KEY_CURRENT_PUZZLE_ID"
         private const val KEY_PUZZLE_ORDER = "KEY_PUZZLE_ORDER"
+        private const val KEY_IS_SOLVED = "KEY_IS_SOLVED"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,9 +77,18 @@ class MainActivity : AppCompatActivity() {
         gameView.setLockIcon(lockIconBitmap)
 
         if (savedInstanceState != null) {
+            isSolved = savedInstanceState.getBoolean(KEY_IS_SOLVED, false)
             val savedPuzzleId = savedInstanceState.getString(KEY_CURRENT_PUZZLE_ID)
             val savedOrder = savedInstanceState.getStringArrayList(KEY_PUZZLE_ORDER)
             startNewGame(savedPuzzleId, savedOrder)
+
+            if (isSolved) {
+                gameView.displayFullImage()
+                showVictoryConfetti()
+                val galleryRunnable = Runnable { launchGallery() }
+                handler.postDelayed(galleryRunnable, 1000) // Shorter delay after rotation
+            }
+
         } else {
             galleryGraphManager.getStartGallery()?.let { startNewGame(it.id, null) }
         }
@@ -86,6 +97,7 @@ class MainActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(KEY_CURRENT_PUZZLE_ID, currentPuzzleId)
+        outState.putBoolean(KEY_IS_SOLVED, isSolved)
         puzzleBoard?.let {
             outState.putStringArrayList(KEY_PUZZLE_ORDER, it.getCurrentPieceOrder())
         }
@@ -142,6 +154,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startNewGame(puzzleId: String?, boardOrder: ArrayList<String>?) {
+        if (boardOrder == null) {
+            isSolved = false // Only reset solved state for a truly new game, not a restore
+        }
         konfettiView.visibility = View.GONE
         konfettiView.setOnClickListener(null)
         handler.removeCallbacksAndMessages(null)
@@ -198,6 +213,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onPuzzleSolved() {
+        if (isSolved) return // Guard against re-triggering
+        isSolved = true
+
         soundManager.playVictorySound()
         hapticManager.playVictoryHaptic()
 
