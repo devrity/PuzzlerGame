@@ -41,6 +41,7 @@ class MainActivity : AppCompatActivity() {
     private var puzzleBoard: PuzzleBoard? = null
     private var currentImage: Bitmap? = null
     private var currentPuzzleId: String? = null
+    private var lockIconBitmap: Bitmap? = null
 
     private val handler = Handler(Looper.getMainLooper())
 
@@ -70,9 +71,12 @@ class MainActivity : AppCompatActivity() {
         initViews()
         setupListeners()
 
+        lockIconBitmap = ImageManager.getImageByPath(this, "puzzles/lock.png")
+        gameView.setLockIcon(lockIconBitmap)
+
         if (savedInstanceState != null) {
             val savedPuzzleId = savedInstanceState.getString(KEY_CURRENT_PUZZLE_ID)
-            val savedOrder = savedInstanceState.getIntegerArrayList(KEY_PUZZLE_ORDER)
+            val savedOrder = savedInstanceState.getStringArrayList(KEY_PUZZLE_ORDER)
             startNewGame(savedPuzzleId, savedOrder)
         } else {
             galleryGraphManager.getStartGallery()?.let { startNewGame(it.id, null) }
@@ -83,7 +87,7 @@ class MainActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
         outState.putString(KEY_CURRENT_PUZZLE_ID, currentPuzzleId)
         puzzleBoard?.let {
-            outState.putIntegerArrayList(KEY_PUZZLE_ORDER, it.getCurrentPieceOrder())
+            outState.putStringArrayList(KEY_PUZZLE_ORDER, it.getCurrentPieceOrder())
         }
     }
 
@@ -137,7 +141,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun startNewGame(puzzleId: String?, boardOrder: ArrayList<Int>?) {
+    private fun startNewGame(puzzleId: String?, boardOrder: ArrayList<String>?) {
         konfettiView.visibility = View.GONE
         konfettiView.setOnClickListener(null)
         handler.removeCallbacksAndMessages(null)
@@ -170,11 +174,12 @@ class MainActivity : AppCompatActivity() {
             val allPieceIds = (0 until totalPieces).toMutableSet()
             val visiblePieceIds = puzzleNode.initState
                 .filter { it != "E" }
-                .map { it.toInt() }
+                .map { it.split("_")[0].toInt() }
             allPieceIds.removeAll(visiblePieceIds)
             allPieceIds.toList()
         } else {
-            listOf(puzzleNode?.emptyPieceId ?: (totalPieces - 1))
+            val emptyId = puzzleNode?.emptyPieceId ?: (totalPieces - 1)
+            listOf(emptyId)
         }
 
         puzzleBoard?.initBoard(pieceBitmaps, emptyPieceIds)

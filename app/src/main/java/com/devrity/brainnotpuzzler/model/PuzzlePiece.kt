@@ -2,26 +2,14 @@ package com.devrity.brainnotpuzzler.model
 
 import android.graphics.Bitmap
 
-/**
- * Represents a single piece of the puzzle.
- *
- * @param id Unique identifier for the piece (0 to gridSize*gridSize - 1)
- * @param correctPosition The position where this piece should be in the solved puzzle
- * @param currentPosition The current position of this piece on the board
- * @param bitmap The image bitmap for this piece (null for the empty space)
- * @param isEmptySpace True if this is the empty space that allows movement
- */
+// Self-contained data class for a puzzle piece
 data class PuzzlePiece(
     val id: Int,
     val correctPosition: Int,
     var currentPosition: Int,
-    val bitmap: Bitmap?,
-    val isEmptySpace: Boolean = false
+    var bitmap: Bitmap?,
+    var isEmptySpace: Boolean,
+    var isLocked: Boolean = false // New property for locking
 ) {
-    /**
-     * Check if this piece is in its correct position
-     */
-    fun isInCorrectPosition(): Boolean {
-        return currentPosition == correctPosition
-    }
+    fun isInCorrectPosition(): Boolean = currentPosition == correctPosition
 }

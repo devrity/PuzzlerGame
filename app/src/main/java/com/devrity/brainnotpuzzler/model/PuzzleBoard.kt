@@ -30,7 +30,7 @@ class PuzzleBoard(private val gridSize: Int) {
 
     fun setBoardState(order: List<String>) {
         val allPossiblePieceIds = (0 until totalPieces).toMutableSet()
-        val visiblePieceCorrectIds = order.filter { it != "E" }.map { it.toInt() }
+        val visiblePieceCorrectIds = order.filter { it != "E" }.map { it.split("_")[0].toInt() }
         allPossiblePieceIds.removeAll(visiblePieceCorrectIds)
         val emptyPieceCorrectIds = allPossiblePieceIds
 
@@ -47,9 +47,17 @@ class PuzzleBoard(private val gridSize: Int) {
                     emptyPieceCorrectIds.remove(emptyId)
                 }
             } else {
-                val correctPositionId = pieceIdentifier.toInt()
+                val parts = pieceIdentifier.split("_")
+                val correctPositionId = parts[0].toInt()
+                val isLocked = parts.size > 1 && parts[1] == "L"
+
                 val pieceToMove = originalPieces[correctPositionId]
-                newPieces[i] = pieceToMove?.copy(currentPosition = i)
+                if (pieceToMove != null) {
+                    newPieces[i] = pieceToMove.copy(
+                        currentPosition = i,
+                        isLocked = isLocked
+                    )
+                }
             }
         }
         this.pieces = newPieces
@@ -78,13 +86,13 @@ class PuzzleBoard(private val gridSize: Int) {
     fun canMove(position: Int): Boolean {
         if (position < 0 || position >= totalPieces) return false
         val piece = pieces[position] ?: return false
-        if (piece.isEmptySpace) return false
+        if (piece.isEmptySpace || piece.isLocked) return false
         
         val emptyNeighbors = getEmptyPositions().filter { isAdjacent(position, it) }
         return emptyNeighbors.isNotEmpty()
     }
     
-    // Overloaded function for simple, unambiguous taps
+    // For unambiguous taps
     fun movePiece(position: Int): Boolean {
         val emptyNeighbors = getEmptyPositions().filter { isAdjacent(position, it) }
         if (emptyNeighbors.size == 1) {
@@ -93,7 +101,7 @@ class PuzzleBoard(private val gridSize: Int) {
         return false
     }
 
-    // New, explicit function for swipes
+    // For explicit swipes
     fun movePiece(from: Int, to: Int): Boolean {
         if (from < 0 || from >= totalPieces || to < 0 || to >= totalPieces) return false
         
@@ -101,7 +109,7 @@ class PuzzleBoard(private val gridSize: Int) {
         val toPiece = pieces[to]
         
         if (fromPiece == null || toPiece == null) return false
-        if (fromPiece.isEmptySpace || !toPiece.isEmptySpace) return false
+        if (fromPiece.isEmptySpace || fromPiece.isLocked || !toPiece.isEmptySpace) return false
         if (!isAdjacent(from, to)) return false
 
         // Swap pieces
@@ -134,23 +142,43 @@ class PuzzleBoard(private val gridSize: Int) {
         return true
     }
 
-    fun getCurrentPieceOrder(): ArrayList<Int> {
-        return ArrayList(pieces.map { it?.id ?: -1 })
+    fun getCurrentPieceOrder(): ArrayList<String> {
+        return ArrayList(pieces.map { piece ->
+            when {
+                piece == null -> ""
+                piece.isEmptySpace -> "E"
+                piece.isLocked -> "${piece.id}_L"
+                else -> "${piece.id}"
+            }
+        })
     }
 
-    fun restoreBoardState(order: List<Int>) {
-        val currentPieces = this.pieces.associateBy { it?.id }
-        val newPieces: Array<PuzzlePiece?> = arrayOfNulls(order.size)
+    fun restoreBoardState(order: List<String>) {
+        val originalPieces = this.pieces.associateBy { it?.id }
+        val newPieces: Array<PuzzlePiece?> = arrayOfNulls(totalPieces)
+        val emptyPieceIdsUsed = mutableListOf<Int>()
+
         for (i in order.indices) {
-            val pieceId = order[i]
-            val pieceToMove = if (pieceId == -1) {
-                pieces.find { it?.isEmptySpace == true }
+            val pieceIdentifier = order[i]
+
+            if (pieceIdentifier == "E") {
+                val emptyPiece = this.pieces.find { it?.isEmptySpace == true && !emptyPieceIdsUsed.contains(it.id) }
+                if (emptyPiece != null) {
+                    newPieces[i] = emptyPiece.copy(currentPosition = i)
+                    emptyPieceIdsUsed.add(emptyPiece.id)
+                }
             } else {
-                currentPieces[pieceId]
-            }
-            
-            if (pieceToMove != null) {
-                newPieces[i] = pieceToMove.copy(currentPosition = i)
+                val parts = pieceIdentifier.split("_")
+                val pieceId = parts[0].toInt()
+                val isLocked = parts.size > 1 && parts[1] == "L"
+
+                val pieceToMove = originalPieces[pieceId]
+                if (pieceToMove != null) {
+                    newPieces[i] = pieceToMove.copy(
+                        currentPosition = i,
+                        isLocked = isLocked
+                    )
+                }
             }
         }
         this.pieces = newPieces

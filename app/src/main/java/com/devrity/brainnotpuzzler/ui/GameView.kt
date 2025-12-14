@@ -23,6 +23,7 @@ class GameView @JvmOverloads constructor(
     private var puzzleBoard: PuzzleBoard? = null
     private var pieces: Array<PuzzlePiece?> = emptyArray()
     private var fullImage: Bitmap? = null
+    private var lockIcon: Bitmap? = null
     private var isVictoryState: Boolean = false
     private var gridSize: Int = 3 // Default size, will be updated by PuzzleBoard
     private var pieceSize: Float = 0f
@@ -57,6 +58,10 @@ class GameView @JvmOverloads constructor(
 
     var onPieceMovedListener: ((isSolved: Boolean) -> Unit)? = null
     var onPieceMoved: (() -> Unit)? = null
+
+    fun setLockIcon(icon: Bitmap?) {
+        this.lockIcon = icon
+    }
 
     fun setPuzzleBoard(board: PuzzleBoard, image: Bitmap) {
         this.puzzleBoard = board
@@ -122,14 +127,20 @@ class GameView @JvmOverloads constructor(
                 val right = left + pieceSize
                 val bottom = top + pieceSize
 
+                pieceDrawingRect.set(left, top, right, bottom)
+
                 if (it.isEmptySpace) {
-                    canvas.drawRect(left, top, right, bottom, emptySpacePaint)
+                    canvas.drawRect(pieceDrawingRect, emptySpacePaint)
                 } else {
                     val bitmap = it.bitmap
                     if (bitmap != null) {
-                        val inset = gridPaint.strokeWidth / 2f
-                        pieceDrawingRect.set(left + inset, top + inset, right - inset, bottom - inset)
                         canvas.drawBitmap(bitmap, null, pieceDrawingRect, piecePaint)
+                    }
+                }
+
+                if (it.isLocked) {
+                    lockIcon?.let {
+                        canvas.drawBitmap(it, null, pieceDrawingRect, piecePaint)
                     }
                 }
             }
