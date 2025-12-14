@@ -50,6 +50,7 @@ class MainActivity : AppCompatActivity() {
     private var lockIconBitmap: Bitmap? = null
     private var isSolved: Boolean = false
     private var isWinScreenShowing: Boolean = false
+    private var puzzlesSolvedThisSession = 0
 
     private val handler = Handler(Looper.getMainLooper())
 
@@ -67,6 +68,7 @@ class MainActivity : AppCompatActivity() {
         private const val KEY_IS_SOLVED = "KEY_IS_SOLVED"
         private const val KEY_MOVE_COUNT = "KEY_MOVE_COUNT"
         private const val KEY_IS_WIN_SCREEN_SHOWING = "KEY_IS_WIN_SCREEN_SHOWING"
+        private const val KEY_PUZZLES_SOLVED_THIS_SESSION = "KEY_PUZZLES_SOLVED_THIS_SESSION"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -86,6 +88,7 @@ class MainActivity : AppCompatActivity() {
         gameView.setLockIcon(lockIconBitmap)
 
         if (savedInstanceState != null) {
+            puzzlesSolvedThisSession = savedInstanceState.getInt(KEY_PUZZLES_SOLVED_THIS_SESSION, 0)
             isSolved = savedInstanceState.getBoolean(KEY_IS_SOLVED, false)
             isWinScreenShowing = savedInstanceState.getBoolean(KEY_IS_WIN_SCREEN_SHOWING, false)
             val savedPuzzleId = savedInstanceState.getString(KEY_CURRENT_PUZZLE_ID)
@@ -122,6 +125,7 @@ class MainActivity : AppCompatActivity() {
         outState.putString(KEY_CURRENT_PUZZLE_ID, currentPuzzleId)
         outState.putBoolean(KEY_IS_SOLVED, isSolved)
         outState.putBoolean(KEY_IS_WIN_SCREEN_SHOWING, isWinScreenShowing)
+        outState.putInt(KEY_PUZZLES_SOLVED_THIS_SESSION, puzzlesSolvedThisSession)
         puzzleBoard?.let {
             outState.putStringArrayList(KEY_BOARD_STATE, it.getCurrentStateForSave())
             outState.putInt(KEY_MOVE_COUNT, it.moveCount)
@@ -232,6 +236,7 @@ class MainActivity : AppCompatActivity() {
     private fun onPuzzleSolved() {
         if (isSolved) return 
         isSolved = true
+        puzzlesSolvedThisSession++
 
         soundManager.playVictorySound()
         hapticManager.playVictoryHaptic()
@@ -251,9 +256,36 @@ class MainActivity : AppCompatActivity() {
     private fun showWinScreen() {
         isWinScreenShowing = true
         konfettiView.visibility = View.GONE
-        singleWinImageView.visibility = View.VISIBLE
-        singleWinImageView.setImageBitmap(ImageManager.getImageByPath(this, "single_win.png"))
-        singleWinImageView.setOnClickListener {
+        
+        val winBitmap = ImageManager.getImageByPath(this, "single_win.png")
+        var leftThumbnail: Bitmap? = null
+        var rightThumbnail: Bitmap? = null
+
+        if (puzzlesSolvedThisSession <= 1) {
+            // First puzzle solved, place on the left page
+            leftThumbnail = currentImage
+        } else {
+            // Second or subsequent puzzle, place on the right page
+            rightThumbnail = currentImage
+            val puzzleNode = galleryGraphManager.getGalleryNode(currentPuzzleId ?: "")
+            val previousPuzzleId = puzzleNode?.incomingEdges?.firstOrNull()
+            if (previousPuzzleId != null) {
+                val previousPuzzleNode = galleryGraphManager.getGalleryNode(previousPuzzleId)
+                if (previousPuzzleNode != null) {
+                    leftThumbnail = ImageManager.getImageByPath(this, previousPuzzleNode.puzzleFolder)
+                }
+            }
+        }
+
+        if (winBitmap != null) {
+            val finalBitmap = ImageManager.createWinScreenBitmap(winBitmap, leftThumbnail, rightThumbnail)
+            singleWinImageView.setImageBitmap(finalBitmap)
+            singleWinImageView.visibility = View.VISIBLE
+            singleWinImageView.setOnClickListener {
+                launchGallery()
+            }
+        } else {
+            // Fallback if images can't be loaded
             launchGallery()
         }
     }
