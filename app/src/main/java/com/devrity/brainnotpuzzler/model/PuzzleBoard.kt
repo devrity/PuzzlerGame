@@ -12,60 +12,57 @@ class PuzzleBoard(private val gridSize: Int) {
         pieces = arrayOfNulls(totalPieces)
     }
 
-    fun initBoard(pieceBitmaps: List<Bitmap>, emptyPieceIds: List<Int>) {
-        if (pieceBitmaps.size != totalPieces) {
-            throw IllegalArgumentException("Expected $totalPieces pieces, got ${pieceBitmaps.size}")
-        }
-
+    fun setupBoard(pieceBitmaps: List<Bitmap>, initState: List<String>?, savedState: List<String>?) {
+        // 1. Create a "perfect" board first
         for (i in 0 until totalPieces) {
-            val isThisTheEmptyPiece = emptyPieceIds.contains(i)
             pieces[i] = PuzzlePiece(
-                id = i,
-                correctPosition = i,
-                currentPosition = i,
-                bitmap = if (isThisTheEmptyPiece) null else pieceBitmaps[i],
-                isEmptySpace = isThisTheEmptyPiece
+                id = i, correctPosition = i, currentPosition = i,
+                bitmap = pieceBitmaps.getOrNull(i), isEmptySpace = false
             )
         }
-    }
 
-    fun setBoardState(order: List<String>) {
-        val allPossiblePieceIds = (0 until totalPieces).toMutableSet()
-        val visiblePieceCorrectIds = order.filter { it != "E" }.map { it.split("_")[0].toInt() }
-        allPossiblePieceIds.removeAll(visiblePieceCorrectIds)
-        val emptyPieceCorrectIds = allPossiblePieceIds
+        // 2. Determine the true state based on priority
+        val stateToLoad = savedState ?: initState
 
-        val originalPieces = this.pieces.associateBy { it?.correctPosition }
-        val newPieces: Array<PuzzlePiece?> = arrayOfNulls(totalPieces)
+        if (stateToLoad != null) {
+            // Load from initState or savedState
+            val allPossibleIds = (0 until totalPieces).toMutableSet()
+            val visibleIds = stateToLoad.filter { it != "E" }.map { it.split("_")[0].toInt() }
+            allPossibleIds.removeAll(visibleIds)
+            val emptyIds = allPossibleIds.toMutableList()
 
-        for (i in order.indices) {
-            val pieceIdentifier = order[i]
-            if (pieceIdentifier == "E") {
-                val emptyId = emptyPieceCorrectIds.firstOrNull() ?: -1
-                val emptyPiece = originalPieces[emptyId]
-                if (emptyPiece != null) {
-                    newPieces[i] = emptyPiece.copy(currentPosition = i, isEmptySpace = true, bitmap = null)
-                    emptyPieceCorrectIds.remove(emptyId)
-                }
-            } else {
-                val parts = pieceIdentifier.split("_")
-                val correctPositionId = parts[0].toInt()
-                val isLocked = parts.size > 1 && parts[1] == "L"
+            val originalPieces = this.pieces.associateBy { it?.correctPosition }
+            val newPieces: Array<PuzzlePiece?> = arrayOfNulls(totalPieces)
 
-                val pieceToMove = originalPieces[correctPositionId]
-                if (pieceToMove != null) {
-                    newPieces[i] = pieceToMove.copy(
-                        currentPosition = i,
-                        isLocked = isLocked
-                    )
+            for (i in stateToLoad.indices) {
+                val identifier = stateToLoad[i]
+                if (identifier == "E") {
+                    val emptyId = emptyIds.firstOrNull()
+                    if (emptyId != null) {
+                        val piece = originalPieces[emptyId]
+                        newPieces[i] = piece?.copy(currentPosition = i, isEmptySpace = true, bitmap = null)
+                        emptyIds.remove(emptyId)
+                    }
+                } else {
+                    val parts = identifier.split("_")
+                    val correctId = parts[0].toInt()
+                    val isLocked = parts.size > 1 && parts[1] == "L"
+                    val piece = originalPieces[correctId]
+                    newPieces[i] = piece?.copy(currentPosition = i, isLocked = isLocked)
                 }
             }
+            this.pieces = newPieces
+        } else {
+            // No predefined state, just shuffle
+            val defaultEmptyId = totalPieces - 1
+            val emptyPiece = pieces.find { it?.correctPosition == defaultEmptyId }
+            emptyPiece?.isEmptySpace = true
+            emptyPiece?.bitmap = null
+            shuffle()
         }
-        this.pieces = newPieces
     }
 
     fun getPieces(): Array<PuzzlePiece?> = pieces.copyOf()
-    
     fun getGridSize(): Int = gridSize
 
     private fun getEmptyPositions(): List<Int> {
@@ -77,22 +74,9 @@ class PuzzleBoard(private val gridSize: Int) {
         val col1 = pos1 % gridSize
         val row2 = pos2 / gridSize
         val col2 = pos2 % gridSize
-
-        if (row1 == row2 && abs(col1 - col2) == 1) return true
-        if (col1 == col2 && abs(row1 - row2) == 1) return true
-
-        return false
+        return (row1 == row2 && abs(col1 - col2) == 1) || (col1 == col2 && abs(row1 - row2) == 1)
     }
 
-    fun canMove(position: Int): Boolean {
-        if (position < 0 || position >= totalPieces) return false
-        val piece = pieces[position] ?: return false
-        if (piece.isEmptySpace || piece.isLocked) return false
-        
-        val emptyNeighbors = getEmptyPositions().filter { isAdjacent(position, it) }
-        return emptyNeighbors.isNotEmpty()
-    }
-    
     fun movePiece(position: Int): Boolean {
         val emptyNeighbors = getEmptyPositions().filter { isAdjacent(position, it) }
         if (emptyNeighbors.size == 1) {
@@ -102,27 +86,23 @@ class PuzzleBoard(private val gridSize: Int) {
     }
 
     fun movePiece(from: Int, to: Int): Boolean {
-        if (from < 0 || from >= totalPieces || to < 0 || to >= totalPieces) return false
-        
-        val fromPiece = pieces[from]
-        val toPiece = pieces[to]
-        
-        if (fromPiece == null || toPiece == null) return false
-        if (fromPiece.isEmptySpace || fromPiece.isLocked || !toPiece.isEmptySpace) return false
-        if (!isAdjacent(from, to)) return false
+        val fromPiece = pieces.getOrNull(from)
+        val toPiece = pieces.getOrNull(to)
+        if (fromPiece == null || toPiece == null || fromPiece.isEmptySpace || fromPiece.isLocked || !toPiece.isEmptySpace) {
+            return false
+        }
 
         pieces[to] = fromPiece.copy(currentPosition = to)
         pieces[from] = toPiece.copy(currentPosition = from)
-        
         moveCount++
         return true
     }
-    
-    fun shuffle() {
+
+    private fun shuffle() {
         var lastMovedFrom = -1
         repeat(20 * totalPieces) {
-            val movablePieces = pieces.mapIndexedNotNull { index, piece -> 
-                if (piece?.isEmptySpace == false && canMove(index) && index != lastMovedFrom) index else null 
+            val movablePieces = pieces.mapIndexedNotNull { index, piece ->
+                if (piece?.isEmptySpace == false && canMove(index) && index != lastMovedFrom) index else null
             }
             if (movablePieces.isNotEmpty()) {
                 val randomPiecePosition = movablePieces.random()
@@ -130,57 +110,26 @@ class PuzzleBoard(private val gridSize: Int) {
                 movePiece(randomPiecePosition)
             }
         }
-        moveCount = 0 // Reset after shuffling
+        moveCount = 0
+    }
+
+    private fun canMove(position: Int): Boolean {
+        val piece = pieces.getOrNull(position)
+        return piece != null && !piece.isEmptySpace && !piece.isLocked && getEmptyPositions().any { isAdjacent(position, it) }
     }
 
     fun isSolved(): Boolean {
-        for (piece in pieces) {
-            if (piece?.isInCorrectPosition() == false) {
-                return false
-            }
-        }
-        return true
+        return pieces.all { it?.isInCorrectPosition() ?: true }
     }
 
-    fun getCurrentPieceOrder(): ArrayList<String> {
+    fun getCurrentStateForSave(): ArrayList<String> {
         return ArrayList(pieces.map { piece ->
             when {
                 piece == null -> ""
                 piece.isEmptySpace -> "E"
-                piece.isLocked -> "${piece.id}_L"
-                else -> "${piece.id}"
+                piece.isLocked -> "${piece.correctPosition}_L"
+                else -> "${piece.correctPosition}"
             }
         })
-    }
-
-    fun restoreBoardState(order: List<String>) {
-        val originalPieces = this.pieces.associateBy { it?.id }
-        val newPieces: Array<PuzzlePiece?> = arrayOfNulls(totalPieces)
-        val emptyPieceIdsUsed = mutableListOf<Int>()
-
-        for (i in order.indices) {
-            val pieceIdentifier = order[i]
-
-            if (pieceIdentifier == "E") {
-                val emptyPiece = this.pieces.find { it?.isEmptySpace == true && !emptyPieceIdsUsed.contains(it.id) }
-                if (emptyPiece != null) {
-                    newPieces[i] = emptyPiece.copy(currentPosition = i)
-                    emptyPieceIdsUsed.add(emptyPiece.id)
-                }
-            } else {
-                val parts = pieceIdentifier.split("_")
-                val pieceId = parts[0].toInt()
-                val isLocked = parts.size > 1 && parts[1] == "L"
-
-                val pieceToMove = originalPieces[pieceId]
-                if (pieceToMove != null) {
-                    newPieces[i] = pieceToMove.copy(
-                        currentPosition = i,
-                        isLocked = isLocked
-                    )
-                }
-            }
-        }
-        this.pieces = newPieces
     }
 }

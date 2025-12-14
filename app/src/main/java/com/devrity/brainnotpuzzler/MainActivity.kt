@@ -13,6 +13,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.Group
 import com.devrity.brainnotpuzzler.manager.GalleryGraphManager
 import com.devrity.brainnotpuzzler.manager.HapticManager
 import com.devrity.brainnotpuzzler.manager.ImageManager
@@ -35,6 +36,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var premiumButton: ImageButton
     private lateinit var konfettiView: KonfettiView
     private lateinit var movesCounterText: TextView
+    private lateinit var startImageView: ImageView
+    private lateinit var mainLayoutGroup: Group
 
     private lateinit var soundManager: SoundManager
     private lateinit var hapticManager: HapticManager
@@ -58,7 +61,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val KEY_CURRENT_PUZZLE_ID = "KEY_CURRENT_PUZZLE_ID"
-        private const val KEY_PUZZLE_ORDER = "KEY_PUZZLE_ORDER"
+        private const val KEY_BOARD_STATE = "KEY_BOARD_STATE"
         private const val KEY_IS_SOLVED = "KEY_IS_SOLVED"
         private const val KEY_MOVE_COUNT = "KEY_MOVE_COUNT"
     }
@@ -82,19 +85,28 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState != null) {
             isSolved = savedInstanceState.getBoolean(KEY_IS_SOLVED, false)
             val savedPuzzleId = savedInstanceState.getString(KEY_CURRENT_PUZZLE_ID)
-            val savedOrder = savedInstanceState.getStringArrayList(KEY_PUZZLE_ORDER)
-            startNewGame(savedPuzzleId, savedOrder)
-            puzzleBoard?.moveCount = savedInstanceState.getInt(KEY_MOVE_COUNT, 0)
-            updateMovesCounter()
+            val savedBoardState = savedInstanceState.getStringArrayList(KEY_BOARD_STATE)
+            startNewGame(savedPuzzleId, savedBoardState)
 
             if (isSolved) {
                 gameView.displayFullImage()
                 showVictoryConfetti()
                 val galleryRunnable = Runnable { launchGallery() }
-                handler.postDelayed(galleryRunnable, 1000) // Shorter delay after rotation
+                handler.postDelayed(galleryRunnable, 1000) 
             }
 
         } else {
+            showStartScreen()
+        }
+    }
+
+    private fun showStartScreen() {
+        mainLayoutGroup.visibility = View.INVISIBLE
+        startImageView.visibility = View.VISIBLE
+        startImageView.setImageBitmap(ImageManager.getImageByPath(this, "start.jpg"))
+        startImageView.setOnClickListener {
+            startImageView.visibility = View.GONE
+            mainLayoutGroup.visibility = View.VISIBLE
             galleryGraphManager.getStartGallery()?.let { startNewGame(it.id, null) }
         }
     }
@@ -104,7 +116,7 @@ class MainActivity : AppCompatActivity() {
         outState.putString(KEY_CURRENT_PUZZLE_ID, currentPuzzleId)
         outState.putBoolean(KEY_IS_SOLVED, isSolved)
         puzzleBoard?.let {
-            outState.putStringArrayList(KEY_PUZZLE_ORDER, it.getCurrentPieceOrder())
+            outState.putStringArrayList(KEY_BOARD_STATE, it.getCurrentStateForSave())
             outState.putInt(KEY_MOVE_COUNT, it.moveCount)
         }
     }
@@ -118,6 +130,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initViews() {
+        mainLayoutGroup = findViewById(R.id.main_layout_group)
+        startImageView = findViewById(R.id.start_image_view)
         gameView = findViewById(R.id.game_view)
         thumbnailPreview = findViewById(R.id.thumbnail_preview)
         replayButton = findViewById(R.id.replay_button)
@@ -161,9 +175,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun startNewGame(puzzleId: String?, boardOrder: ArrayList<String>?) {
-        if (boardOrder == null) {
-            isSolved = false // Only reset solved state for a truly new game, not a restore
+    private fun startNewGame(puzzleId: String?, savedBoardState: ArrayList<String>?) {
+        if (savedBoardState == null) {
+            isSolved = false 
         }
         konfettiView.visibility = View.GONE
         konfettiView.setOnClickListener(null)
@@ -173,7 +187,7 @@ class MainActivity : AppCompatActivity() {
 
         val puzzleNode = galleryGraphManager.getGalleryNode(puzzleId ?: "")
         val imagePath = puzzleNode?.puzzleFolder
-        val puzzleSize = puzzleNode?.puzzleSize ?: 3 // Default to 3x3 if not specified
+        val puzzleSize = puzzleNode?.puzzleSize ?: 3
 
         currentImage = if (imagePath == null) {
             ImageManager.getDefaultImage(this)
@@ -191,28 +205,8 @@ class MainActivity : AppCompatActivity() {
 
         puzzleBoard = PuzzleBoard(puzzleSize)
         val pieceBitmaps = ImageManager.sliceImage(currentImage!!, puzzleSize)
+        puzzleBoard?.setupBoard(pieceBitmaps, puzzleNode?.initState, savedBoardState)
         
-        val totalPieces = puzzleSize * puzzleSize
-        val emptyPieceIds = if (puzzleNode?.initState?.isNotEmpty() == true) {
-            val allPieceIds = (0 until totalPieces).toMutableSet()
-            val visiblePieceIds = puzzleNode.initState
-                .filter { it != "E" }
-                .map { it.split("_")[0].toInt() }
-            allPieceIds.removeAll(visiblePieceIds)
-            allPieceIds.toList()
-        } else {
-            val emptyId = puzzleNode?.emptyPieceId ?: (totalPieces - 1)
-            listOf(emptyId)
-        }
-
-        puzzleBoard?.initBoard(pieceBitmaps, emptyPieceIds)
-
-        when {
-            boardOrder != null -> puzzleBoard?.restoreBoardState(boardOrder)
-            puzzleNode?.initState?.isNotEmpty() == true -> puzzleBoard?.setBoardState(puzzleNode.initState)
-            else -> puzzleBoard?.shuffle()
-        }
-
         updateMovesCounter()
 
         if (puzzleBoard != null) {
@@ -227,7 +221,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onPuzzleSolved() {
-        if (isSolved) return // Guard against re-triggering
+        if (isSolved) return 
         isSolved = true
 
         soundManager.playVictorySound()

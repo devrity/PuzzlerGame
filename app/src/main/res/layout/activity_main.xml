@@ -8,6 +8,26 @@
     android:padding="6dp"
     tools:context=".MainActivity">
 
+    <!-- The new Start Screen Image -->
+    <ImageView
+        android:id="@+id/start_image_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerInside"
+        android:visibility="gone"
+        android:contentDescription="@string/start_image_description"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Group to control visibility of all main UI elements -->
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/main_layout_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="game_view,thumbnail_preview,moves_counter_layout,button_row" />
+
     <!-- Puzzle Game View -->
     <com.devrity.brainnotpuzzler.ui.GameView
         android:id="@+id/game_view"

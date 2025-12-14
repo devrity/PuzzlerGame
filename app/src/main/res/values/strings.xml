@@ -11,4 +11,5 @@
     <string name="next">Next</string>
     <string name="thumbnail_preview">Thumbnail of the completed puzzle</string>
     <string name="moves_counter_icon">Icon for moves counter</string>
+    <string name="start_image_description">Start screen image</string>
 </resources>
