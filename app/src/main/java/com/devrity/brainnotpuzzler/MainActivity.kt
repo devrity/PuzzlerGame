@@ -9,6 +9,7 @@ import android.os.Looper
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -33,6 +34,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var galleryButton: ImageButton
     private lateinit var premiumButton: ImageButton
     private lateinit var konfettiView: KonfettiView
+    private lateinit var movesCounterText: TextView
 
     private lateinit var soundManager: SoundManager
     private lateinit var hapticManager: HapticManager
@@ -58,6 +60,7 @@ class MainActivity : AppCompatActivity() {
         private const val KEY_CURRENT_PUZZLE_ID = "KEY_CURRENT_PUZZLE_ID"
         private const val KEY_PUZZLE_ORDER = "KEY_PUZZLE_ORDER"
         private const val KEY_IS_SOLVED = "KEY_IS_SOLVED"
+        private const val KEY_MOVE_COUNT = "KEY_MOVE_COUNT"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,6 +84,8 @@ class MainActivity : AppCompatActivity() {
             val savedPuzzleId = savedInstanceState.getString(KEY_CURRENT_PUZZLE_ID)
             val savedOrder = savedInstanceState.getStringArrayList(KEY_PUZZLE_ORDER)
             startNewGame(savedPuzzleId, savedOrder)
+            puzzleBoard?.moveCount = savedInstanceState.getInt(KEY_MOVE_COUNT, 0)
+            updateMovesCounter()
 
             if (isSolved) {
                 gameView.displayFullImage()
@@ -100,6 +105,7 @@ class MainActivity : AppCompatActivity() {
         outState.putBoolean(KEY_IS_SOLVED, isSolved)
         puzzleBoard?.let {
             outState.putStringArrayList(KEY_PUZZLE_ORDER, it.getCurrentPieceOrder())
+            outState.putInt(KEY_MOVE_COUNT, it.moveCount)
         }
     }
 
@@ -119,11 +125,13 @@ class MainActivity : AppCompatActivity() {
         galleryButton = findViewById(R.id.gallery_button)
         premiumButton = findViewById(R.id.premium_button)
         konfettiView = findViewById(R.id.konfetti_view)
+        movesCounterText = findViewById(R.id.moves_counter_text)
     }
 
     private fun setupListeners() {
         gameView.onPieceMoved = {
             soundManager.playPieceMoveSound()
+            updateMovesCounter()
         }
 
         gameView.onPieceMovedListener = { isSolved ->
@@ -205,11 +213,17 @@ class MainActivity : AppCompatActivity() {
             else -> puzzleBoard?.shuffle()
         }
 
+        updateMovesCounter()
+
         if (puzzleBoard != null) {
             gameView.setPuzzleBoard(puzzleBoard!!, currentImage!!)
             gameView.setShowGridLines(true)
             gameView.setInteractionEnabled(true)
         }
+    }
+
+    private fun updateMovesCounter() {
+        movesCounterText.text = puzzleBoard?.moveCount.toString()
     }
 
     private fun onPuzzleSolved() {

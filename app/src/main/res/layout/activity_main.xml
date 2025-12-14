@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#E8F5E9"
+    android:padding="6dp"
     tools:context=".MainActivity">
 
     <!-- Puzzle Game View -->
@@ -16,26 +17,83 @@
         android:background="#C8E6C9"
         android:saveEnabled="false"
         app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintBottom_toTopOf="@+id/thumbnail_preview"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Thumbnail Preview -->
+    <!-- b) Middle Area -->
+
+    <!-- b > right: Preview image (50% width) -->
     <ImageView
         android:id="@+id/thumbnail_preview"
-        android:layout_width="108dp"
-        android:layout_height="108dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_margin="6dp"
         android:background="#A5D6A7"
         android:padding="4dp"
         android:scaleType="centerCrop"
         android:contentDescription="@string/thumbnail_preview"
         android:saveEnabled="false"
+        app:layout_constraintWidth_percent="0.5"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintTop_toBottomOf="@+id/game_view"
         app:layout_constraintBottom_toTopOf="@+id/button_row"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Button Row -->
+    <!-- b > left: 2x2 Grid for stats -->
+    <GridLayout
+        android:id="@+id/moves_counter_layout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:columnCount="2"
+        android:rowCount="2"
+        android:layout_margin="6dp"
+        app:layout_constraintTop_toTopOf="@+id/thumbnail_preview"
+        app:layout_constraintBottom_toBottomOf="@+id/thumbnail_preview"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/thumbnail_preview">
+
+        <!-- Top-Left: Icon -->
+        <ImageView
+            android:id="@+id/moves_icon"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:layout_gravity="fill"
+            android:padding="8dp"
+            android:src="@drawable/ic_moves"
+            android:contentDescription="@string/moves_counter_icon" />
+
+        <!-- Top-Right: Counter -->
+        <TextView
+            android:id="@+id/moves_counter_text"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            android:gravity="center"
+            android:textSize="36sp"
+            android:textStyle="bold"
+            tools:text="123" />
+
+        <!-- Bottom-Left: Empty -->
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1" />
+
+        <!-- Bottom-Right: Empty -->
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1" />
+
+    </GridLayout>
+
+    <!-- c) Bottom Button Row -->
     <LinearLayout
         android:id="@+id/button_row"
         android:layout_width="0dp"

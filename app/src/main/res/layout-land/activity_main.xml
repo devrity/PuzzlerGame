@@ -7,77 +7,129 @@
     android:background="#E8F5E9"
     tools:context=".MainActivity">
 
-    <!-- Left Panel Container (30% width) -->
-    <LinearLayout
+    <!-- Left Panel Container -->
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/left_panel"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:background="#E8F5E9"
         android:padding="8dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/game_view"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintWidth_percent="0.3">
+        app:layout_constraintWidth_percent="0.4">
 
         <!-- Thumbnail Preview -->
         <ImageView
             android:id="@+id/thumbnail_preview"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_marginBottom="8dp"
             android:background="#A5D6A7"
             android:padding="4dp"
             android:scaleType="centerCrop"
             android:contentDescription="@string/thumbnail_preview"
-            android:saveEnabled="false" />
+            android:saveEnabled="false"
+            app:layout_constraintHeight_percent="0.5"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintDimensionRatio="1:1" />
 
-        <!-- Button Row (single row, 4 buttons) -->
+        <!-- Move Counter 2x2 Grid -->
+        <GridLayout
+            android:id="@+id/moves_counter_layout"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:columnCount="2"
+            android:rowCount="2"
+            app:layout_constraintTop_toTopOf="@+id/thumbnail_preview"
+            app:layout_constraintBottom_toBottomOf="@+id/thumbnail_preview"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/thumbnail_preview">
+
+            <!-- Top-Left: Icon -->
+            <ImageView
+                android:id="@+id/moves_icon"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_columnWeight="1"
+                android:layout_rowWeight="1"
+                android:layout_gravity="fill"
+                android:padding="8dp"
+                android:src="@drawable/ic_moves"
+                android:contentDescription="@string/moves_counter_icon" />
+
+            <!-- Top-Right: Counter -->
+            <TextView
+                android:id="@+id/moves_counter_text"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_columnWeight="1"
+                android:layout_rowWeight="1"
+                android:gravity="center"
+                android:textSize="36sp"
+                android:textStyle="bold"
+                tools:text="123" />
+
+            <!-- Bottom-Left: Empty -->
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_columnWeight="1"
+                android:layout_rowWeight="1" />
+
+            <!-- Bottom-Right: Empty -->
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_columnWeight="1"
+                android:layout_rowWeight="1" />
+
+        </GridLayout>
+
+        <!-- Button Row -->
         <LinearLayout
             android:id="@+id/button_row"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_percent="0.15"
             android:orientation="horizontal"
             android:gravity="center"
-            android:layout_margin="6dp">
+            android:layout_margin="6dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
-            <!-- Replay Button -->
             <ImageButton
                 android:id="@+id/replay_button"
                 android:layout_width="0dp"
-                android:layout_height="72dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_margin="4dp"
                 android:contentDescription="@string/replay"
                 android:src="@android:drawable/ic_menu_revert" />
 
-            <!-- Settings Button -->
             <ImageButton
                 android:id="@+id/settings_button"
                 android:layout_width="0dp"
-                android:layout_height="72dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_margin="4dp"
                 android:contentDescription="@string/settings"
                 android:src="@android:drawable/ic_menu_manage" />
 
-            <!-- Gallery Button -->
             <ImageButton
                 android:id="@+id/gallery_button"
                 android:layout_width="0dp"
-                android:layout_height="72dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_margin="4dp"
                 android:contentDescription="@string/gallery"
                 android:src="@android:drawable/ic_menu_gallery" />
 
-            <!-- Premium Button -->
             <ImageButton
                 android:id="@+id/premium_button"
                 android:layout_width="0dp"
-                android:layout_height="72dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_margin="4dp"
                 android:contentDescription="@string/premium"
@@ -85,16 +137,16 @@
 
         </LinearLayout>
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Right Panel - Game View (70% width) -->
+    <!-- Right Panel - Game View -->
     <com.devrity.brainnotpuzzler.ui.GameView
         android:id="@+id/game_view"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="6dp"
         android:background="#C8E6C9"
         android:saveEnabled="false"
-        app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintStart_toEndOf="@+id/left_panel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"

@@ -5,6 +5,7 @@ import kotlin.math.abs
 
 class PuzzleBoard(private val gridSize: Int) {
     private var pieces: Array<PuzzlePiece?>
+    var moveCount: Int = 0
     private val totalPieces = gridSize * gridSize
 
     init {
@@ -37,7 +38,7 @@ class PuzzleBoard(private val gridSize: Int) {
         val originalPieces = this.pieces.associateBy { it?.correctPosition }
         val newPieces: Array<PuzzlePiece?> = arrayOfNulls(totalPieces)
 
-        for (i in 0 until totalPieces) {
+        for (i in order.indices) {
             val pieceIdentifier = order[i]
             if (pieceIdentifier == "E") {
                 val emptyId = emptyPieceCorrectIds.firstOrNull() ?: -1
@@ -92,7 +93,6 @@ class PuzzleBoard(private val gridSize: Int) {
         return emptyNeighbors.isNotEmpty()
     }
     
-    // For unambiguous taps
     fun movePiece(position: Int): Boolean {
         val emptyNeighbors = getEmptyPositions().filter { isAdjacent(position, it) }
         if (emptyNeighbors.size == 1) {
@@ -101,7 +101,6 @@ class PuzzleBoard(private val gridSize: Int) {
         return false
     }
 
-    // For explicit swipes
     fun movePiece(from: Int, to: Int): Boolean {
         if (from < 0 || from >= totalPieces || to < 0 || to >= totalPieces) return false
         
@@ -112,10 +111,10 @@ class PuzzleBoard(private val gridSize: Int) {
         if (fromPiece.isEmptySpace || fromPiece.isLocked || !toPiece.isEmptySpace) return false
         if (!isAdjacent(from, to)) return false
 
-        // Swap pieces
         pieces[to] = fromPiece.copy(currentPosition = to)
         pieces[from] = toPiece.copy(currentPosition = from)
-
+        
+        moveCount++
         return true
     }
     
@@ -131,6 +130,7 @@ class PuzzleBoard(private val gridSize: Int) {
                 movePiece(randomPiecePosition)
             }
         }
+        moveCount = 0 // Reset after shuffling
     }
 
     fun isSolved(): Boolean {

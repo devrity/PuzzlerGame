@@ -10,4 +10,5 @@
     <string name="new_game">New Game</string>
     <string name="next">Next</string>
     <string name="thumbnail_preview">Thumbnail of the completed puzzle</string>
+    <string name="moves_counter_icon">Icon for moves counter</string>
 </resources>
