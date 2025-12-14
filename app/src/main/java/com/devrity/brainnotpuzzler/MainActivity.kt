@@ -37,6 +37,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var konfettiView: KonfettiView
     private lateinit var movesCounterText: TextView
     private lateinit var startImageView: ImageView
+    private lateinit var singleWinImageView: ImageView
     private lateinit var mainLayoutGroup: Group
 
     private lateinit var soundManager: SoundManager
@@ -48,6 +49,7 @@ class MainActivity : AppCompatActivity() {
     private var currentPuzzleId: String? = null
     private var lockIconBitmap: Bitmap? = null
     private var isSolved: Boolean = false
+    private var isWinScreenShowing: Boolean = false
 
     private val handler = Handler(Looper.getMainLooper())
 
@@ -64,6 +66,7 @@ class MainActivity : AppCompatActivity() {
         private const val KEY_BOARD_STATE = "KEY_BOARD_STATE"
         private const val KEY_IS_SOLVED = "KEY_IS_SOLVED"
         private const val KEY_MOVE_COUNT = "KEY_MOVE_COUNT"
+        private const val KEY_IS_WIN_SCREEN_SHOWING = "KEY_IS_WIN_SCREEN_SHOWING"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,15 +87,18 @@ class MainActivity : AppCompatActivity() {
 
         if (savedInstanceState != null) {
             isSolved = savedInstanceState.getBoolean(KEY_IS_SOLVED, false)
+            isWinScreenShowing = savedInstanceState.getBoolean(KEY_IS_WIN_SCREEN_SHOWING, false)
             val savedPuzzleId = savedInstanceState.getString(KEY_CURRENT_PUZZLE_ID)
             val savedBoardState = savedInstanceState.getStringArrayList(KEY_BOARD_STATE)
             startNewGame(savedPuzzleId, savedBoardState)
 
-            if (isSolved) {
+            if (isWinScreenShowing) {
+                showWinScreen()
+            } else if (isSolved) {
                 gameView.displayFullImage()
                 showVictoryConfetti()
-                val galleryRunnable = Runnable { launchGallery() }
-                handler.postDelayed(galleryRunnable, 1000) 
+                val winScreenRunnable = Runnable { showWinScreen() }
+                handler.postDelayed(winScreenRunnable, 1000) 
             }
 
         } else {
@@ -115,6 +121,7 @@ class MainActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
         outState.putString(KEY_CURRENT_PUZZLE_ID, currentPuzzleId)
         outState.putBoolean(KEY_IS_SOLVED, isSolved)
+        outState.putBoolean(KEY_IS_WIN_SCREEN_SHOWING, isWinScreenShowing)
         puzzleBoard?.let {
             outState.putStringArrayList(KEY_BOARD_STATE, it.getCurrentStateForSave())
             outState.putInt(KEY_MOVE_COUNT, it.moveCount)
@@ -132,6 +139,7 @@ class MainActivity : AppCompatActivity() {
     private fun initViews() {
         mainLayoutGroup = findViewById(R.id.main_layout_group)
         startImageView = findViewById(R.id.start_image_view)
+        singleWinImageView = findViewById(R.id.single_win_image_view)
         gameView = findViewById(R.id.game_view)
         thumbnailPreview = findViewById(R.id.thumbnail_preview)
         replayButton = findViewById(R.id.replay_button)
@@ -155,7 +163,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         replayButton.setOnClickListener {
-            currentPuzzleId?.let { startNewGame(it, null) }
+            startNewGame(currentPuzzleId, null)
         }
 
         settingsButton.setOnClickListener {
@@ -177,10 +185,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun startNewGame(puzzleId: String?, savedBoardState: ArrayList<String>?) {
         if (savedBoardState == null) {
-            isSolved = false 
+            isSolved = false
+            isWinScreenShowing = false
         }
         konfettiView.visibility = View.GONE
-        konfettiView.setOnClickListener(null)
+        singleWinImageView.visibility = View.GONE
         handler.removeCallbacksAndMessages(null)
 
         currentPuzzleId = puzzleId
@@ -235,11 +244,16 @@ class MainActivity : AppCompatActivity() {
         gameView.displayFullImage()
         showVictoryConfetti()
 
-        val galleryRunnable = Runnable { launchGallery() }
-        handler.postDelayed(galleryRunnable, 3000)
-
-        konfettiView.setOnClickListener {
-            handler.removeCallbacks(galleryRunnable)
+        val winScreenRunnable = Runnable { showWinScreen() }
+        handler.postDelayed(winScreenRunnable, 3000)
+    }
+    
+    private fun showWinScreen() {
+        isWinScreenShowing = true
+        konfettiView.visibility = View.GONE
+        singleWinImageView.visibility = View.VISIBLE
+        singleWinImageView.setImageBitmap(ImageManager.getImageByPath(this, "single_win.png"))
+        singleWinImageView.setOnClickListener {
             launchGallery()
         }
     }

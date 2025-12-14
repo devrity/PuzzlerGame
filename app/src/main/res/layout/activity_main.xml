@@ -21,7 +21,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Group to control visibility of all main UI elements -->
+    <!-- Group to control visibility of all main game UI elements -->
     <androidx.constraintlayout.widget.Group
         android:id="@+id/main_layout_group"
         android:layout_width="wrap_content"
@@ -167,5 +167,18 @@
         android:id="@+id/konfetti_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <ImageView
+        android:id="@+id/single_win_image_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        android:scaleType="fitCenter"
+        android:visibility="gone"
+        android:contentDescription="@string/single_win_image_description"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
