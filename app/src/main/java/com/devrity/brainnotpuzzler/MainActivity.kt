@@ -166,18 +166,18 @@ class MainActivity : AppCompatActivity() {
         val pieceBitmaps = ImageManager.sliceImage(currentImage!!, puzzleSize)
         
         val totalPieces = puzzleSize * puzzleSize
-        val emptyPieceId = if (puzzleNode?.initState?.isNotEmpty() == true) {
+        val emptyPieceIds = if (puzzleNode?.initState?.isNotEmpty() == true) {
             val allPieceIds = (0 until totalPieces).toMutableSet()
             val visiblePieceIds = puzzleNode.initState
                 .filter { it != "E" }
                 .map { it.toInt() }
             allPieceIds.removeAll(visiblePieceIds)
-            allPieceIds.firstOrNull() ?: (totalPieces - 1)
+            allPieceIds.toList()
         } else {
-            puzzleNode?.emptyPieceId ?: (totalPieces - 1)
+            listOf(puzzleNode?.emptyPieceId ?: (totalPieces - 1))
         }
 
-        puzzleBoard?.initBoard(pieceBitmaps, emptyPieceId)
+        puzzleBoard?.initBoard(pieceBitmaps, emptyPieceIds)
 
         when {
             boardOrder != null -> puzzleBoard?.restoreBoardState(boardOrder)

@@ -12,6 +12,7 @@ import android.view.MotionEvent
 import android.view.View
 import com.devrity.brainnotpuzzler.model.PuzzleBoard
 import com.devrity.brainnotpuzzler.model.PuzzlePiece
+import kotlin.math.abs
 
 class GameView @JvmOverloads constructor(
     context: Context,
@@ -52,6 +53,7 @@ class GameView @JvmOverloads constructor(
 
     private var touchStartX: Float = 0f
     private var touchStartY: Float = 0f
+    private val swipeThreshold = 50f
 
     var onPieceMovedListener: ((isSolved: Boolean) -> Unit)? = null
     var onPieceMoved: (() -> Unit)? = null
@@ -158,24 +160,41 @@ class GameView @JvmOverloads constructor(
                 return true
             }
             MotionEvent.ACTION_UP -> {
-                 return performClick()
+                val deltaX = event.x - touchStartX
+                val deltaY = event.y - touchStartY
+
+                if (abs(deltaX) < swipeThreshold && abs(deltaY) < swipeThreshold) {
+                    // It's a tap
+                    handleTap(touchStartX, touchStartY)
+                } else {
+                    // It's a swipe
+                    handleSwipe(touchStartX, touchStartY, deltaX, deltaY)
+                }
+                return true
             }
         }
         return super.onTouchEvent(event)
     }
 
-    override fun performClick(): Boolean {
-        super.performClick()
-        if (isVictoryState) return true
-        handleTap(touchStartX, touchStartY)
-        return true
-    }
-
     private fun handleTap(x: Float, y: Float) {
         val position = getTouchedPosition(x, y)
         if (position != -1) {
-            movePiece(position)
+            movePieceByTap(position)
         }
+    }
+
+    private fun handleSwipe(startX: Float, startY: Float, deltaX: Float, deltaY: Float) {
+        val fromPosition = getTouchedPosition(startX, startY)
+        if (fromPosition == -1) return
+
+        val toPosition = when {
+            abs(deltaX) > abs(deltaY) && deltaX > 0 -> fromPosition + 1 // Right
+            abs(deltaX) > abs(deltaY) && deltaX < 0 -> fromPosition - 1 // Left
+            abs(deltaY) > abs(deltaX) && deltaY > 0 -> fromPosition + gridSize // Down
+            else -> fromPosition - gridSize // Up
+        }
+
+        movePieceBySwipe(fromPosition, toPosition)
     }
 
     private fun getTouchedPosition(x: Float, y: Float): Int {
@@ -190,13 +209,27 @@ class GameView @JvmOverloads constructor(
         return row * gridSize + col
     }
 
-    private fun movePiece(position: Int) {
+    private fun movePieceByTap(position: Int) {
         puzzleBoard?.let { board ->
             if (board.movePiece(position)) {
-                updatePieces()
-                onPieceMoved?.invoke()
-                onPieceMovedListener?.invoke(board.isSolved())
+                updatePiecesAndNotify()
             }
+        }
+    }
+
+    private fun movePieceBySwipe(from: Int, to: Int) {
+        puzzleBoard?.let { board ->
+            if (board.movePiece(from, to)) {
+                updatePiecesAndNotify()
+            }
+        }
+    }
+
+    private fun updatePiecesAndNotify() {
+        updatePieces()
+        onPieceMoved?.invoke()
+        puzzleBoard?.let {
+            onPieceMovedListener?.invoke(it.isSolved())
         }
     }
 }
