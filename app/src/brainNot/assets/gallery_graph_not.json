@@ -1,7 +1,20 @@
 {
   "version": "1.0",
-  "startNodeId": "Astralpacaino.jpg",
+  "startNodeId": "Spaghetti Spazialini.jpg",
   "nodes": {
+    "Spaghetti Spazialini.jpg": {
+      "id": "Spaghetti Spazialini.jpg",
+      "icon": "puzzles/thumbnails/Spaghetti Spazialini.jpg",
+      "puzzleFolder": "puzzles/Spaghetti Spazialini.jpg",
+      "puzzleSize": 2,
+      "totalPuzzles": 1,
+      "unlockType": "FREE",
+      "requiredCompletions": 0,
+      "initState": ["0", "E", "2", "1"],
+      "incomingEdges": [],
+      "outgoingEdges": ["Astralpacaino.jpg"],
+      "puzzleImagesRef": []
+    },
     "Astralpacaino.jpg": {
       "id": "Astralpacaino.jpg",
       "icon": "puzzles/thumbnails/Astralpacaino.jpg",
@@ -9,9 +22,9 @@
       "puzzleSize": 3,
       "totalPuzzles": 1,
       "unlockType": "FREE",
-      "requiredCompletions": 0,
+      "requiredCompletions": 1,
       "initState": ["0", "1_L", "2_L", "3", "E", "5", "6", "E", "7"],
-      "incomingEdges": [],
+      "incomingEdges": ["Spaghetti Spazialini.jpg"],
       "outgoingEdges": ["Bambina Claudina.jpg"],
       "puzzleImagesRef": []
     },
