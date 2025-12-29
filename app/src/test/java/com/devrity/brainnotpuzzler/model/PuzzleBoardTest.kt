@@ -336,12 +336,18 @@ class PuzzleBoardTest {
         val initState = listOf("0", "1", "E", "3", "4", "5", "6", "7", "8")
         puzzleBoard.setupBoard(pieceBitmaps, initState, null)
         
-        // Position 1 is adjacent to empty at 2
+        // Position 1 is adjacent to empty at 2 (horizontally)
         val moveSuccess = puzzleBoard.movePiece(1)
         assertTrue(moveSuccess)
         
-        // Position 0 is not adjacent to empty (now at 1)
+        // After first move, empty is now at position 1
+        // Position 0 is adjacent to empty at 1 (horizontally) - should succeed
         val moveSuccess2 = puzzleBoard.movePiece(0)
-        assertFalse(moveSuccess2)
+        assertTrue(moveSuccess2)
+        
+        // After second move, empty is now at position 0
+        // Position 2 is NOT adjacent to empty at 0 (not horizontally or vertically adjacent)
+        val moveSuccess3 = puzzleBoard.movePiece(2)
+        assertFalse(moveSuccess3)
     }
 }

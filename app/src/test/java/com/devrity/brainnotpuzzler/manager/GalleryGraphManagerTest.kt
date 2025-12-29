@@ -17,7 +17,7 @@ import org.mockito.junit.MockitoJUnitRunner
  * Note: JSON loading from assets requires instrumented tests
  * These tests focus on the business logic around node status and unlocking
  */
-@RunWith(MockitoJUnitRunner::class)
+@RunWith(MockitoJUnitRunner.Silent::class)
 class GalleryGraphManagerTest {
 
     @Mock
