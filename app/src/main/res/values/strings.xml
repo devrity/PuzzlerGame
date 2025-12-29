@@ -13,4 +13,5 @@
     <string name="moves_counter_icon">Icon for moves counter</string>
     <string name="start_image_description">Start screen image</string>
     <string name="single_win_image_description">Full screen win confirmation image</string>
+    <string name="move_limit_icon">Icon for move limit</string>
 </resources>
