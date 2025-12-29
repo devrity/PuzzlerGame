@@ -13,7 +13,7 @@ import org.mockito.junit.MockitoJUnitRunner
  * Unit tests for PuzzleBoard - Core game logic testing
  * Tests cover: move validation, win detection, board state management
  */
-@RunWith(MockitoJUnitRunner::class)
+@RunWith(MockitoJUnitRunner.Silent::class)
 class PuzzleBoardTest {
 
     @Mock
