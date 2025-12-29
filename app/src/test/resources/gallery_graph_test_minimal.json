@@ -1,0 +1,20 @@
+{
+  "version": "1.0",
+  "startNodeId": "simple_puzzle",
+  "nodes": {
+    "simple_puzzle": {
+      "id": "simple_puzzle",
+      "icon": "icon.png",
+      "puzzleFolder": "puzzles/simple.jpg",
+      "puzzleSize": 2,
+      "totalPuzzles": 1,
+      "unlockType": "FREE",
+      "requiredCompletions": 0,
+      "initState": null,
+      "emptyPieceId": null,
+      "incomingEdges": [],
+      "outgoingEdges": [],
+      "puzzleImagesRef": []
+    }
+  }
+}
