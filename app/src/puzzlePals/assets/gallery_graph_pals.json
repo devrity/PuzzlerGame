@@ -1,15 +1,59 @@
 {
   "version": "1.0",
-  "startNodeId": "pals1.jpg",
+  "startNodeId": "Spaghetti Spazialini.jpg",
   "nodes": {
-    "pals1.jpg": {
-      "id": "pals1.jpg",
-      "icon": "puzzles/thumbnails/pals1.jpg",
-      "puzzleFolder": "puzzles/pals1.jpg",
+    "Spaghetti Spazialini.jpg": {
+      "id": "Spaghetti Spazialini.jpg",
+      "icon": "puzzles/thumbnails/Spaghetti Spazialini.jpg",
+      "puzzleFolder": "puzzles/Spaghetti Spazialini.jpg",
+      "puzzleSize": 2,
       "totalPuzzles": 1,
       "unlockType": "FREE",
       "requiredCompletions": 0,
+      "initState": ["0", "E", "2", "1"],
       "incomingEdges": [],
+      "outgoingEdges": ["Astralpacaino.jpg"],
+      "puzzleImagesRef": []
+    },
+    "Astralpacaino.jpg": {
+      "id": "Astralpacaino.jpg",
+      "icon": "puzzles/thumbnails/Astralpacaino.jpg",
+      "puzzleFolder": "puzzles/Astralpacaino.jpg",
+      "puzzleSize": 3,
+      "totalPuzzles": 1,
+      "unlockType": "FREE",
+      "requiredCompletions": 1,
+      "initState": ["0", "1_L", "2_L", "3", "E", "5", "6", "E", "7"],
+      "showMovesCtr": 1,
+      "showMovesLimit": 20,
+      "incomingEdges": ["Spaghetti Spazialini.jpg"],
+      "outgoingEdges": ["Bambina Claudina.jpg"],
+      "puzzleImagesRef": []
+    },
+    "Bambina Claudina.jpg": {
+      "id": "Bambina Claudina.jpg",
+      "icon": "puzzles/thumbnails/Bambina Claudina.jpg",
+      "puzzleFolder": "puzzles/Bambina Claudina.jpg",
+      "puzzleSize": 3,
+      "totalPuzzles": 1,
+      "unlockType": "FREE",
+      "requiredCompletions": 1,
+      "showMovesCtr": 1,
+      "initState": ["0", "1", "2", "3", "E", "4", "6", "7", "8"],
+      "incomingEdges": ["Astralpacaino.jpg"],
+      "outgoingEdges": ["Pingu Plutino.jpg"],
+      "puzzleImagesRef": []
+    },
+    "Pingu Plutino.jpg": {
+      "id": "Pingu Plutino.jpg",
+      "icon": "puzzles/thumbnails/Pingu Plutino.jpg",
+      "puzzleFolder": "puzzles/Pingu Plutino.jpg",
+      "puzzleSize": 4,
+      "totalPuzzles": 1,
+      "unlockType": "FREE",
+      "requiredCompletions": 1,
+      "initState": ["0", "1", "2", "3", "E", "4", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"],
+      "incomingEdges": ["Bambina Claudina.jpg"],
       "outgoingEdges": [],
       "puzzleImagesRef": []
     }
