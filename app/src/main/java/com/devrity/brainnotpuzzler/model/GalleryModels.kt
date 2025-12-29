@@ -20,6 +20,8 @@ data class GalleryNode(
     val requiredCompletions: Int,
     val initState: List<String>?,
     val emptyPieceId: Int?,
+    val showMovesCtr: Int?,
+    val showMovesLimit: Int?,
     @SerializedName("incomingEdges")
     val incomingEdges: List<String>,
     @SerializedName("outgoingEdges")
