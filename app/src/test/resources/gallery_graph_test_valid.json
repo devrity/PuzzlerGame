@@ -1,0 +1,62 @@
+{
+  "version": "1.0.0",
+  "startNodeId": "puzzle_001",
+  "nodes": {
+    "puzzle_001": {
+      "id": "puzzle_001",
+      "icon": "icons/puzzle_001.png",
+      "puzzleFolder": "puzzles/animals/cat.jpg",
+      "puzzleSize": 3,
+      "totalPuzzles": 1,
+      "unlockType": "FREE",
+      "requiredCompletions": 0,
+      "initState": ["0", "1", "2", "3", "4", "5", "6", "7", "E"],
+      "emptyPieceId": 8,
+      "incomingEdges": [],
+      "outgoingEdges": ["puzzle_002", "puzzle_003"],
+      "puzzleImagesRef": ["cat_001.jpg"]
+    },
+    "puzzle_002": {
+      "id": "puzzle_002",
+      "icon": "icons/puzzle_002.png",
+      "puzzleFolder": "puzzles/animals/dog.jpg",
+      "puzzleSize": 3,
+      "totalPuzzles": 1,
+      "unlockType": "FREE",
+      "requiredCompletions": 1,
+      "initState": ["0_L", "1", "2", "3", "4_L", "5", "6", "7", "E"],
+      "emptyPieceId": 8,
+      "incomingEdges": ["puzzle_001"],
+      "outgoingEdges": ["puzzle_004"],
+      "puzzleImagesRef": ["dog_001.jpg"]
+    },
+    "puzzle_003": {
+      "id": "puzzle_003",
+      "icon": "icons/puzzle_003.png",
+      "puzzleFolder": "puzzles/nature/tree.jpg",
+      "puzzleSize": 4,
+      "totalPuzzles": 1,
+      "unlockType": "AD_REQUIRED",
+      "requiredCompletions": 1,
+      "initState": null,
+      "emptyPieceId": null,
+      "incomingEdges": ["puzzle_001"],
+      "outgoingEdges": ["puzzle_004"],
+      "puzzleImagesRef": ["tree_001.jpg"]
+    },
+    "puzzle_004": {
+      "id": "puzzle_004",
+      "icon": "icons/puzzle_004.png",
+      "puzzleFolder": "puzzles/nature/mountain.jpg",
+      "puzzleSize": 5,
+      "totalPuzzles": 1,
+      "unlockType": "PREMIUM",
+      "requiredCompletions": 2,
+      "initState": ["0", "E", "1", "2", "E", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "E", "21"],
+      "emptyPieceId": null,
+      "incomingEdges": ["puzzle_002", "puzzle_003"],
+      "outgoingEdges": [],
+      "puzzleImagesRef": ["mountain_001.jpg", "mountain_002.jpg"]
+    }
+  }
+}
