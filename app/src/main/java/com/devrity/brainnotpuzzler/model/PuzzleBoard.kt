@@ -88,7 +88,13 @@ class PuzzleBoard(private val gridSize: Int) {
     fun movePiece(from: Int, to: Int): Boolean {
         val fromPiece = pieces.getOrNull(from)
         val toPiece = pieces.getOrNull(to)
-        if (fromPiece == null || toPiece == null || fromPiece.isEmptySpace || fromPiece.isLocked || !toPiece.isEmptySpace) {
+        
+        // FIX #1: Add adjacency check
+        if (fromPiece == null || toPiece == null || 
+            fromPiece.isEmptySpace || 
+            fromPiece.isLocked || 
+            !toPiece.isEmptySpace ||
+            !isAdjacent(from, to)) {  // <-- ADDED: Check if positions are adjacent
             return false
         }
 
