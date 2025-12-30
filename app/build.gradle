@@ -4,50 +4,50 @@ plugins {
 }
 
 android {
-    namespace 'com.devrity.brainnotpuzzler'
-    compileSdk 36
+    namespace = 'com.devrity.brainnotpuzzler'
+    compileSdk = 36
 
     defaultConfig {
-        minSdk 26
-        targetSdk 36
-        versionCode 1
-        versionName "1.0"
+        minSdk = 26
+        targetSdk = 36
+        versionCode = 1
+        versionName = "1.0"
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled = false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
-    flavorDimensions "version"
+    flavorDimensions = ["version"]
     productFlavors {
         brainNot {
-            dimension "version"
-            applicationId "com.devrity.brainnotpuzzler"
+            dimension = "version"
+            applicationId = "com.devrity.brainnotpuzzler"
             resValue "string", "app_name", "Brain Not Puzzler"
             resValue "string", "gallery_graph_json", "brainNotPuzzlerGraph.json"
         }
         puzzlePals {
-            dimension "version"
-            applicationId "com.devrity.puzzlepals"
+            dimension = "version"
+            applicationId = "com.devrity.puzzlepals"
             resValue "string", "app_name", "Puzzle Pals"
             resValue "string", "gallery_graph_json", "puzzlePalsGraph.json"
         }
         puzzlePro {
-            dimension "version"
-            applicationId "com.devrity.puzzlepro"
+            dimension = "version"
+            applicationId = "com.devrity.puzzlepro"
             resValue "string", "app_name", "Puzzle Pro"
             resValue "string", "gallery_graph_json", "puzzleProGraph.json"
         }
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
     kotlinOptions {
