@@ -104,7 +104,7 @@ class GameViewTapGestureTest {
         // Board layout (3x3):
         // [0][1][2]
         // [3][4][5]
-        // [6][7][E]  <- Position 8 is empty
+        // [6][7][8]
         puzzleBoard = PuzzleBoard(3)
         val initState = listOf("0", "1", "2", "3", "4", "5", "6", "7", "E")
         puzzleBoard.setupBoard(mockBitmaps, initState, null)
@@ -224,14 +224,14 @@ class GameViewTapGestureTest {
     @Test
     fun whenTapOnTileWithTwoEmptyButOnlyOnePossibility_shouldMove() {
         // Board layout (3x3):
-        // [0][1][E]  <- Position 2 is empty
+        // [E][1][E]  <- Position 0 and 2 are empty
         // [3][4][5]
-        // [6][7][E]  <- Position 8 is empty
+        // [6][7][8]
         // Position 5 is adjacent to position 2 (only one adjacent empty)
-        // Position 8 is NOT adjacent to position 5 (too far)
+        // Position 0 is NOT adjacent to position 5 (diagonal)
         // So tapping position 5 should work!
         puzzleBoard = PuzzleBoard(3)
-        val initState = listOf("0", "1", "E", "3", "4", "5", "6", "7", "E")
+        val initState = listOf("E", "1", "E", "3", "4", "5", "6", "7", "8")
         puzzleBoard.setupBoard(mockBitmaps, initState, null)
 
         val initialMoveCount = puzzleBoard.moveCount
