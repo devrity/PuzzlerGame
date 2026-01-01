@@ -119,7 +119,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showStartScreen(savedInstanceState: Bundle?)
+    private fun showStartScreen(savedInstanceState: Bundle?) {
         // Only set initial visibility on first launch, not on rotation
         if (savedInstanceState == null) {
             mainLayoutGroup.visibility = View.INVISIBLE
