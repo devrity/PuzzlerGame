@@ -98,6 +98,7 @@ class MainActivity : AppCompatActivity() {
 
             // Ensure main layout is visible after game restoration
             mainLayoutGroup.visibility = View.VISIBLE
+            gameView.visibility = View.VISIBLE
             startImageView.visibility = View.GONE
 
             if (isWinScreenShowing) {
