@@ -280,26 +280,37 @@ class GameViewTapGestureTest {
 
     @Test
     fun whenMultipleTapsInSequence_shouldUpdateBoardCorrectly() {
-        // Board layout (2x2) for simplicity:
-        // [0][1]
-        // [2][E]  <- Position 3 is empty
-        puzzleBoard = PuzzleBoard(2)
-        val mockBitmaps2x2 = List(4) { createMockBitmap(100, 100) }
-        val initState = listOf("0", "1", "2", "E")
-        puzzleBoard.setupBoard(mockBitmaps2x2, initState, null)
+        // FIXED: Use 3x3 board with valid adjacent moves (not diagonal)
+        // Board layout (3x3):
+        // [0][1][2]
+        // [3][E][5]  <- Position 4 is empty
+        // [6][7][8]
+        puzzleBoard = PuzzleBoard(3)
+        val initState = listOf("0", "1", "2", "3", "E", "5", "6", "7", "8")
+        puzzleBoard.setupBoard(mockBitmaps, initState, null)
 
-        // First tap: position 2 -> empty at 3
-        val move1 = puzzleBoard.movePiece(2)
+        // First tap: position 1 -> empty at 4 (vertically adjacent)
+        val move1 = puzzleBoard.movePiece(1)
         assertTrue("First tap should succeed", move1)
         assertEquals("Move count should be 1", 1, puzzleBoard.moveCount)
 
-        // Second tap: position 1 -> empty now at 2
-        val move2 = puzzleBoard.movePiece(1)
+        // Board is now:
+        // [0][E][2]
+        // [3][1][5]
+        // [6][7][8]
+
+        // Second tap: position 2 -> empty now at 1 (horizontally adjacent)
+        val move2 = puzzleBoard.movePiece(2)
         assertTrue("Second tap should succeed", move2)
         assertEquals("Move count should be 2", 2, puzzleBoard.moveCount)
 
-        // Third tap: position 0 -> empty now at 1
-        val move3 = puzzleBoard.movePiece(0)
+        // Board is now:
+        // [0][2][E]
+        // [3][1][5]
+        // [6][7][8]
+
+        // Third tap: position 5 -> empty now at 2 (vertically adjacent)
+        val move3 = puzzleBoard.movePiece(5)
         assertTrue("Third tap should succeed", move3)
         assertEquals("Move count should be 3", 3, puzzleBoard.moveCount)
     }
