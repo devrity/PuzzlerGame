@@ -323,28 +323,37 @@ class GameViewSwipeGestureTest {
 
     @Test
     fun whenMultipleSwipesInSequence_shouldUpdateBoardCorrectly() {
-        // Board layout (2x2) for simplicity:
-        // [0][1]
-        // [2][E]  <- Position 3 is empty
-        puzzleBoard = PuzzleBoard(2)
-        val mockBitmaps2x2 = List(4) { createMockBitmap(100, 100) }
-        val initState = listOf("0", "1", "2", "E")
-        puzzleBoard.setupBoard(mockBitmaps2x2, initState, null)
+        // FIXED: Use 3x3 board with valid adjacent moves (not diagonal)
+        // Board layout (3x3):
+        // [0][1][2]
+        // [3][E][5]  <- Position 4 is empty
+        // [6][7][8]
+        puzzleBoard = PuzzleBoard(3)
+        val initState = listOf("0", "1", "2", "3", "E", "5", "6", "7", "8")
+        puzzleBoard.setupBoard(mockBitmaps, initState, null)
 
-        // First swipe: position 2 UP into position 0? No, DOWN into 3
-        // Wait, position 2 is at row 1, col 0. Position 3 is at row 1, col 1.
-        // Let's swipe position 2 RIGHT into position 3 (empty)
-        val move1 = puzzleBoard.movePiece(2, 3)
+        // First swipe: position 1 DOWN into position 4 (vertically adjacent)
+        val move1 = puzzleBoard.movePiece(1, 4)
         assertTrue("First swipe should succeed", move1)
         assertEquals("Move count should be 1", 1, puzzleBoard.moveCount)
 
-        // Second swipe: position 1 DOWN into position 3 (now empty)
-        val move2 = puzzleBoard.movePiece(1, 3)
+        // Board is now:
+        // [0][E][2]
+        // [3][1][5]
+        // [6][7][8]
+
+        // Second swipe: position 2 LEFT into position 1 (horizontally adjacent)
+        val move2 = puzzleBoard.movePiece(2, 1)
         assertTrue("Second swipe should succeed", move2)
         assertEquals("Move count should be 2", 2, puzzleBoard.moveCount)
 
-        // Third swipe: position 0 RIGHT into position 1 (now empty)
-        val move3 = puzzleBoard.movePiece(0, 1)
+        // Board is now:
+        // [0][2][E]
+        // [3][1][5]
+        // [6][7][8]
+
+        // Third swipe: position 5 UP into position 2 (vertically adjacent)
+        val move3 = puzzleBoard.movePiece(5, 2)
         assertTrue("Third swipe should succeed", move3)
         assertEquals("Move count should be 3", 3, puzzleBoard.moveCount)
     }
