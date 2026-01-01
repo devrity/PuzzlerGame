@@ -69,6 +69,8 @@ class MainActivity : AppCompatActivity() {
         private const val KEY_MOVE_COUNT = "KEY_MOVE_COUNT"
         private const val KEY_IS_WIN_SCREEN_SHOWING = "KEY_IS_WIN_SCREEN_SHOWING"
         private const val KEY_PUZZLES_SOLVED_THIS_SESSION = "KEY_PUZZLES_SOLVED_THIS_SESSION"
+    private const val KEY_MAIN_LAYOUT_VISIBILITY = "main_layout_visibility"
+    private const val KEY_START_IMAGE_VISIBILITY = "start_image_visibility"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -93,6 +95,14 @@ class MainActivity : AppCompatActivity() {
             isWinScreenShowing = savedInstanceState.getBoolean(KEY_IS_WIN_SCREEN_SHOWING, false)
             val savedPuzzleId = savedInstanceState.getString(KEY_CURRENT_PUZZLE_ID)
             val savedBoardState = savedInstanceState.getStringArrayList(KEY_BOARD_STATE)
+
+            // Restore view visibility state
+            mainLayoutGroup.visibility = savedInstanceState.getInt(
+                KEY_MAIN_LAYOUT_VISIBILITY, View.VISIBLE
+            )
+            startImageView.visibility = savedInstanceState.getInt(
+                KEY_START_IMAGE_VISIBILITY, View.GONE
+            )
             startNewGame(savedPuzzleId, savedBoardState)
 
             if (isWinScreenShowing) {
@@ -110,8 +120,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showStartScreen() {
-        mainLayoutGroup.visibility = View.INVISIBLE
-        startImageView.visibility = View.VISIBLE
+        // Only set initial visibility on first launch, not on rotation
+        if (savedInstanceState == null) {
+            mainLayoutGroup.visibility = View.INVISIBLE
+            startImageView.visibility = View.VISIBLE
+        }
         startImageView.setImageBitmap(ImageManager.getImageByPath(this, "start.jpg"))
         startImageView.setOnClickListener {
             startImageView.visibility = View.GONE
@@ -130,6 +143,9 @@ class MainActivity : AppCompatActivity() {
             outState.putStringArrayList(KEY_BOARD_STATE, it.getCurrentStateForSave())
             outState.putInt(KEY_MOVE_COUNT, it.moveCount)
         }
+        // Save view visibility state
+        outState.putInt(KEY_MAIN_LAYOUT_VISIBILITY, mainLayoutGroup.visibility)
+        outState.putInt(KEY_START_IMAGE_VISIBILITY, startImageView.visibility)
     }
 
     private fun updateActionBarVisibility() {
