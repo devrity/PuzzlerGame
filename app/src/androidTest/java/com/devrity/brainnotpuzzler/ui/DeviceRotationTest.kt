@@ -5,6 +5,7 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
+import org.hamcrest.Matchers.not
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.devrity.brainnotpuzzler.GalleryActivity
 import com.devrity.brainnotpuzzler.MainActivity
