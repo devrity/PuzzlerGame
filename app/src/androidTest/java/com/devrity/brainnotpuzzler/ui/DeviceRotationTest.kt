@@ -66,7 +66,10 @@ class DeviceRotationTest {
             verifyNoException(scenario)
 
             // Verify UI is still functional
-            onView(withId(R.id.game_view)).check(matches(isDisplayed()))
+            // Verify sad monster start image is still displayed after rotation
+            onView(withId(R.id.start_image_view)).check(matches(isDisplayed()))
+            // Verify game has not started yet
+            onView(withId(R.id.game_view)).check(matches(not(isDisplayed())))
         }
     }
 
@@ -80,7 +83,10 @@ class DeviceRotationTest {
             rotateToOrientation(scenario, ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE)
             verifyNoException(scenario)
 
-            onView(withId(R.id.game_view)).check(matches(isDisplayed()))
+            // Verify sad monster start image is still displayed after rotation
+            onView(withId(R.id.start_image_view)).check(matches(isDisplayed()))
+            // Verify game has not started yet
+            onView(withId(R.id.game_view)).check(matches(not(isDisplayed())))
         }
     }
 
@@ -93,7 +99,10 @@ class DeviceRotationTest {
             rotateToOrientation(scenario, ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
             verifyNoException(scenario)
 
-            onView(withId(R.id.game_view)).check(matches(isDisplayed()))
+            // Verify sad monster start image is still displayed after rotation
+            onView(withId(R.id.start_image_view)).check(matches(isDisplayed()))
+            // Verify game has not started yet
+            onView(withId(R.id.game_view)).check(matches(not(isDisplayed())))
         }
     }
 
@@ -114,7 +123,10 @@ class DeviceRotationTest {
             verifyNoException(scenario)
 
             // Verify game view is still displayed
-            onView(withId(R.id.game_view)).check(matches(isDisplayed()))
+            // Verify sad monster start image is still displayed after rotation
+            onView(withId(R.id.start_image_view)).check(matches(isDisplayed()))
+            // Verify game has not started yet
+            onView(withId(R.id.game_view)).check(matches(not(isDisplayed())))
         }
     }
 
@@ -229,7 +241,10 @@ class DeviceRotationTest {
             Thread.sleep(ROTATION_SETTLE_TIME)
 
             // Verify UI is still functional
-            onView(withId(R.id.game_view)).check(matches(isDisplayed()))
+            // Verify sad monster start image is still displayed after rotation
+            onView(withId(R.id.start_image_view)).check(matches(isDisplayed()))
+            // Verify game has not started yet
+            onView(withId(R.id.game_view)).check(matches(not(isDisplayed())))
         }
     }
 
