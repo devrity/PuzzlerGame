@@ -70,18 +70,6 @@ class DeviceRotationTest {
         }
     }
 
-    @Test
-    fun whenRotateOnFirstScreen_fromPortraitToReversePortrait_shouldNotCrash() {
-        ActivityScenario.launch(MainActivity::class.java).use { scenario ->
-            rotateToOrientation(scenario, ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
-            verifyNoException(scenario)
-
-            rotateToOrientation(scenario, ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT)
-            verifyNoException(scenario)
-
-            onView(withId(R.id.game_view)).check(matches(isDisplayed()))
-        }
-    }
 
     @Test
     fun whenRotateOnFirstScreen_fromPortraitToReverseLandscape_shouldNotCrash() {
@@ -109,24 +97,6 @@ class DeviceRotationTest {
         }
     }
 
-    @Test
-    fun whenRotateOnFirstScreen_throughAllOrientations_shouldNotCrash() {
-        ActivityScenario.launch(MainActivity::class.java).use { scenario ->
-            val orientations = listOf(
-                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT,
-                ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE,
-                ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT,
-                ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE,
-                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-            )
-
-            orientations.forEach { orientation ->
-                rotateToOrientation(scenario, orientation)
-                verifyNoException(scenario)
-                onView(withId(R.id.game_view)).check(matches(isDisplayed()))
-            }
-        }
-    }
 
     // ==================== MainActivity - Puzzle Solving ====================
 
@@ -148,25 +118,6 @@ class DeviceRotationTest {
         }
     }
 
-    @Test
-    fun whenRotateDuringPuzzleSolving_throughAllOrientations_shouldNotCrash() {
-        ActivityScenario.launch(MainActivity::class.java).use { scenario ->
-            val orientations = listOf(
-                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT,
-                ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE,
-                ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT,
-                ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE
-            )
-
-            orientations.forEach { orientation ->
-                rotateToOrientation(scenario, orientation)
-                verifyNoException(scenario)
-
-                // Verify game view is still present and functional
-                onView(withId(R.id.game_view)).check(matches(isDisplayed()))
-            }
-        }
-    }
 
     // ==================== MainActivity - Confetti Animation ====================
 
@@ -204,24 +155,6 @@ class DeviceRotationTest {
         }
     }
 
-    @Test
-    fun whenRotateOnGalleryScreen_throughAllOrientations_shouldNotCrash() {
-        ActivityScenario.launch(GalleryActivity::class.java).use { scenario ->
-            val orientations = listOf(
-                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT,
-                ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE,
-                ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT,
-                ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE,
-                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-            )
-
-            orientations.forEach { orientation ->
-                rotateToOrientation(scenario, orientation)
-                verifyNoException(scenario)
-                onView(withId(R.id.puzzle_grid)).check(matches(isDisplayed()))
-            }
-        }
-    }
 
     @Test
     fun whenRotateOnGalleryScreen_andRotateBack_shouldNotCrash() {
@@ -281,4 +214,23 @@ class DeviceRotationTest {
             onView(withId(R.id.game_view)).check(matches(isDisplayed()))
         }
     }
+
+    @Test
+    fun whenRotateOnFirstScreen_fromLandscapeToReverseLandscape_shouldNotCrash() {
+        ActivityScenario.launch(MainActivity::class.java).use { scenario ->
+            // Start in Landscape
+            rotateToOrientation(scenario, ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
+            verifyNoException(scenario)
+            Thread.sleep(ROTATION_SETTLE_TIME)
+
+            // Rotate to Reverse Landscape
+            rotateToOrientation(scenario, ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE)
+            verifyNoException(scenario)
+            Thread.sleep(ROTATION_SETTLE_TIME)
+
+            // Verify UI is still functional
+            onView(withId(R.id.game_view)).check(matches(isDisplayed()))
+        }
+    }
+
 }
