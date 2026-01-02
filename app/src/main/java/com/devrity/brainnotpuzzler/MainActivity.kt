@@ -96,25 +96,31 @@ class MainActivity : AppCompatActivity() {
 
             if (savedPuzzleId != null) {
                 // Restore game state
-                startNewGame(savedPuzzleId, savedBoardState)
+                
 
+                startNewGame(savedPuzzleId, savedBoardState)
+                
                 // Ensure main layout is visible after game restoration
                 mainLayoutGroup.visibility = View.VISIBLE
-                gameView.visibility = View.VISIBLE
-                startImageView.visibility = View.GONE
 
-                if (isWinScreenShowing) {
-                showWinScreen()
-                } else if (isSolved) {
-                gameView.displayFullImage()
+                gameView.visibility = View.VISIBLE
+                    startImageView.visibility = View.GONE
+                
+                    if (isWinScreenShowing) {
+                    showWinScreen()
+                    } else if (isSolved) {
+                    gameView.displayFullImage()
                 showVictoryConfetti()
-                val winScreenRunnable = Runnable { showWinScreen() }
-                handler.postDelayed(winScreenRunnable, 1000)
-                }
             } else {
                 // Still on start screen, restore start screen state
                 showStartScreen(savedInstanceState)
             }
+                val winScreenRunnable = Runnable { showWinScreen() }
+                handler.postDelayed(winScreenRunnable, 1000) 
+            }
+
+        } else {
+            showStartScreen(savedInstanceState)
         }
     }
 
@@ -122,16 +128,6 @@ class MainActivity : AppCompatActivity() {
         // Always show start screen properly (whether first launch or rotation)
         mainLayoutGroup.visibility = View.INVISIBLE
         startImageView.visibility = View.VISIBLE
-        startImageView.setImageBitmap(ImageManager.getImageByPath(this, "start.jpg"))
-        startImageView.setOnClickListener {
-        startImageView.visibility = View.GONE
-        mainLayoutGroup.visibility = View.VISIBLE
-            galleryGraphManager.getStartGallery()?.let { startNewGame(it.id, null) }
-        // Only set initial visibility on first launch, not on rotation
-        if (savedInstanceState == null) {
-            mainLayoutGroup.visibility = View.INVISIBLE
-            startImageView.visibility = View.VISIBLE
-        }
         startImageView.setImageBitmap(ImageManager.getImageByPath(this, "start.jpg"))
         startImageView.setOnClickListener {
             startImageView.visibility = View.GONE
